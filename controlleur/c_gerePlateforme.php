@@ -47,22 +47,13 @@ switch($action) {
         break;
     }
 }
-$tbPlateformes  = $db->getLesPlateformes();
-
-require_once 'vendor/autoload.php';
-$loader = new \Twig\Loader\FilesystemLoader('vue');
-$twig = new \Twig\Environment($loader);
-
-$variables = [
-    'menuActif' => $menuActif,
-    'tbPlateformes' => $tbPlateformes,
-    'idPlateformeModif' => $idPlateformeModif,
-    'notification' => $notification,
-];
-if (isset($idPlateformeNotif)) {
-    $variables['idPlateformeNotif'] = $idPlateformeNotif;
-}
-
-echo $twig->render('v_lesPlateformes.html.twig', $variables);
-
+// affichage
+$tbPlateformes = $db->getLesPlateformes();
+echo $twig->render('lesPlateformes.html.twig', array(
+'menuActif' => 'Jeux',
+'tbPlateformes' => $tbPlateformes,
+'idPlateformeModif' => $idPlateformeModif,
+'idPlateformeNotif' => isset($idPlateformeNotif) ? $idPlateformeNotif : -1,
+'notification' => $notification
+));
 ?>

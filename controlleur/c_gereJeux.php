@@ -60,34 +60,21 @@ switch($action) {
         break;
     }
 }
-
-// l'affichage des jeux se fait dans tous les cas
-// on charge les listes pour les formulaires
+// affichage
 $tbJeux = $db->getLesJeux();
 $tbGenres = $db->getLesGenres();
 $tbMarques = $db->getLesMarques();
 $tbPlateformes = $db->getLesPlateformes();
 $tbPegis = $db->getLesPegis();
-
-// --- DEBUT INITIALISATION TWIG ---
-require_once 'vendor/autoload.php';
-$loader = new \Twig\Loader\FilesystemLoader('vue');
-$twig = new \Twig\Environment($loader);
-
-$variables = [
-    'menuActif' => $menuActif,
-    'tbJeux' => $tbJeux,
-    'tbGenres' => $tbGenres,
-    'tbMarques' => $tbMarques,
-    'tbPlateformes' => $tbPlateformes,
-    'tbPegis' => $tbPegis,
-    'refJeuModif' => $refJeuModif,
-    'notification' => $notification,
-];
-if (isset($refJeuNotif)) {
-    $variables['refJeuNotif'] = $refJeuNotif;
-}
-
-echo $twig->render('v_lesJeux.html.twig', $variables);
-// --- FIN ---
+echo $twig->render('lesJeux.html.twig', array(
+'menuActif' => 'Jeux',
+'tbJeux' => $tbJeux,
+'tbGenres' => $tbGenres,
+'tbMarques' => $tbMarques,
+'tbPlateformes' => $tbPlateformes,
+'tbPegis' => $tbPegis,
+'refJeuModif' => $refJeuModif,
+'refJeuNotif' => isset($refJeuNotif) ? $refJeuNotif : null,
+'notification' => $notification
+));
 ?>

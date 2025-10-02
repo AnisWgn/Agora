@@ -1,0 +1,128 @@
+{% extends "layout.html.twig" %}
+{% block central %}
+<div class="col-sm-12">
+    <section class="panel">
+        <div class="chat-room-head">
+            <h3><i class="fa fa-gamepad"></i> Gérer les jeux</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-striped table-advance table-hover">
+                <thead>
+                    <tr class="tableau-entete">
+                        <th><i class="fa fa-barcode"></i> Réf.</th>
+                        <th><i class="fa fa-bookmark"></i> Nom</th>
+                        <th><i class="fa fa-eur"></i> Prix</th>
+                        <th><i class="fa fa-calendar"></i> Parution</th>
+                        <th><i class="fa-solid fa-marker"></i>Genre</th>
+                        <th><i class="fa-solid fa-signature"></i>Marque</th>
+                        <th><i class="fa-brands fa-xbox"></i>Plateforme</th>
+                        <th><i class="fa-solid fa-1"></i>PEGI</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <form action="index.php?uc=gererJeux" method="post">
+                            <td><input type="text" name="refJeu" size="10" required placeholder="Référence"></td>
+                            <td><input type="text" name="nom" size="20" required placeholder="Nom du jeu"></td>
+                            <td><input type="number" name="prix" step="0.01" style="width:80px;" required placeholder="Prix"></td>
+                            <td><input type="date" name="dateParution" style="width:130px;" required></td>
+                            <td>
+                                <select name="idGenre">
+                                    {% for genre in tbGenres %}<option value="{{ genre.identifiant }}">{{ genre.libelle }}</option>{% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="idMarque">
+                                    {% for marque in tbMarques %}<option value="{{ marque.identifiant }}">{{ marque.libelle }}</option>{% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="idPlateforme">
+                                    {% for plateforme in tbPlateformes %}<option value="{{ plateforme.identifiant }}">{{ plateforme.libelle }}</option>{% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="idPegi">
+                                    {% for pegi in tbPegis %}<option value="{{ pegi.identifiant }}">{{ pegi.age }}</option>{% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="ajouterNouveauJeu" title="Enregistrer nouveau jeu"><i class="fa fa-save"></i></button>
+                                <button class="btn btn-info btn-xs" type="reset" title="Effacer la saisie"><i class="fa fa-eraser"></i></button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% for jeu in tbJeux %}
+                        <tr>
+                            <form action="index.php?uc=gererJeux" method="post">
+                                <input type="hidden" name="refJeu" value="{{ jeu.refJeu|e }}">
+                                {% if refJeuModif is defined and jeu.refJeu == refJeuModif %}
+                                    <td>{{ jeu.refJeu|e }}</td>
+                                    <td><input type="text" name="nom" value="{{ jeu.nom|e }}" size="20"></td>
+                                    <td><input type="number" name="prix" step="0.01" value="{{ jeu.prix|e }}" style="width:80px;"></td>
+                                    <td><input type="date" name="dateParution" value="{{ jeu.dateParution|e }}" style="width:130px;"></td>
+                                    <td>
+                                        <select name="idGenre">
+                                            {% for genre in tbGenres %}
+                                                {% set selected = (jeu.libGenre == genre.libelle) ? 'selected' : '' %}
+                                                <option value="{{ genre.identifiant }}" {{ selected }}>{{ genre.libelle }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="idMarque">
+                                            {% for marque in tbMarques %}
+                                                {% set selected = (jeu.nomMarque == marque.libelle) ? 'selected' : '' %}
+                                                <option value="{{ marque.identifiant }}" {{ selected }}>{{ marque.libelle }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="idPlateforme">
+                                            {% for plateforme in tbPlateformes %}
+                                                {% set selected = (jeu.libPlateforme == plateforme.libelle) ? 'selected' : '' %}
+                                                <option value="{{ plateforme.identifiant }}" {{ selected }}>{{ plateforme.libelle }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="idPegi">
+                                            {% for pegi in tbPegis %}
+                                                {% set selected = (jeu.ageLimite == pegi.age) ? 'selected' : '' %}
+                                                <option value="{{ pegi.identifiant }}" {{ selected }}>{{ pegi.age }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="validerModifierJeu" title="Enregistrer"><i class="fa fa-save"></i></button>
+                                        <button class="btn btn-warning btn-xs" type="submit" name="cmdAction" value="annulerModifierJeu" title="Annuler"><i class="fa fa-undo"></i></button>
+                                    </td>
+                                {% else %}
+                                    <td>{{ jeu.refJeu|e }}</td>
+                                    <td>{{ jeu.nom|e }}</td>
+                                    <td>{{ jeu.prix|e }} €</td>
+                                    <td>{{ jeu.dateParution|date('d/m/Y') }}</td>
+                                    <td>{{ jeu.libGenre|e }}</td>
+                                    <td>{{ jeu.nomMarque|e }}</td>
+                                    <td>{{ jeu.libPlateforme|e }}</td>
+                                    <td>{{ jeu.ageLimite|e }}</td>
+                                    <td>
+                                        {% if notification != 'rien' and jeu.refJeu == refJeuNotif %}
+                                            <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> {{ notification }}</button>
+                                        {% endif %}
+                                        <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="demanderModifierJeu" title="Modifier"><i class="fa fa-pencil"></i></button>
+                                        <button class="btn btn-danger btn-xs" type="submit" name="cmdAction" value="supprimerJeu" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer ce jeu ?');"><i class="fa fa-trash-o "></i></button>
+                                    </td>
+                                {% endif %}
+                            </form>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+

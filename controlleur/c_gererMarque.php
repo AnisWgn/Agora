@@ -47,24 +47,13 @@ switch($action) {
         break;
     }
 }
-
-// l'affichage des marques se fait dans tous les cas
-$tbMarques  = $db->getLesMarques();
-
-require_once 'vendor/autoload.php';
-$loader = new \Twig\Loader\FilesystemLoader('vue');
-$twig = new \Twig\Environment($loader);
-
-$variables = [
-    'menuActif' => $menuActif,
-    'tbMarques' => $tbMarques,
-    'idMarqueModif' => $idMarqueModif,
-    'notification' => $notification,
-];
-if (isset($idMarqueNotif)) {
-    $variables['idMarqueNotif'] = $idMarqueNotif;
-}
-
-echo $twig->render('v_lesMarques.html.twig', $variables);
-
+// affichage
+$tbMarques = $db->getLesMarques();
+echo $twig->render('lesMarques.html.twig', array(
+'menuActif' => 'Jeux',
+'tbMarques' => $tbMarques,
+'idMarqueModif' => $idMarqueModif,
+'idMarqueNotif' => isset($idMarqueNotif) ? $idMarqueNotif : -1,
+'notification' => $notification
+));
 ?>
