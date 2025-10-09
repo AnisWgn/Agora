@@ -17,7 +17,15 @@ Navigation"></div>
 <!--logo end-->
 <div class="top-menu">
 <ul class="nav pull-right top-menu">
-<a href="" class="userAgo"> {{ session.prenomUtilisateur }} {{ session.nomUtilisateur }}</a>
+{% if (session.idUtilisateur is defined) %}
+<a href="" class="userAgo"> {{ session.prenomUtilisateur }} {{ session.nomUtilisateur
+}}</a>
+<li><a class="logout" href="index.php?uc=deconnexion&action=demanderDeconnexion">Se
+déconnecter</a></li>
+{% else %}
+<li><a class="logout" href="index.php?uc=connexion&action=demanderConnexion">Se
+connecter</a></li>
+{% endif %}
 <!-- pour rappel : version PHP <?php
 // Si aucun utilisateur connecté, on affiche la demande de connexionif
 (!isset($_SESSION['idUtilisateur'])){
@@ -42,7 +50,9 @@ MAIN SIDEBAR MENU
 ************************************************************************************************
 *********************************************************** -->
 {% block menu %}
+{% if (session.idUtilisateur is defined) %}
 {{ include('menu.html.twig') }}
+{% endif %}
 {% endblock %}
 <!--
 ************************************************************************************************
