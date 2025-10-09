@@ -1,3 +1,5 @@
+{% extends "layout.html.twig" %}
+{% block central %}
 <!-- page start-->
 <div class="col-sm-6">
     <section class="panel">
@@ -14,7 +16,6 @@
               </tr>
             </thead>
             <tbody>
-            <!-- formulaire pour ajouter une nouvelle marque-->
             <tr>
             <form action="index.php?uc=gererMarques" method="post">
                 <td>Nouveau</td>
@@ -23,11 +24,10 @@
                 </td>
                 <td> 
                     <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="ajouterNouvelleMarque" title="Enregistrer nouvelle marque"><i class="fa fa-save"></i></button>
-                    <button class="btn btn-info btn-xs" type="reset" title="Effacer la saisie"><i class="fa fa-eraser"></i></button>	
+                    <button class="btn btn-info btn-xs" type="reset" title="Effacer la saisie"><i class="fa fa-eraser"></i></button> 
                 </td>
             </form>
             </tr>
-                
             {% for marque in tbMarques %}
               <tr>
                 <form action="index.php?uc=gererMarques" method="post">
@@ -36,8 +36,8 @@
                     {% if marque.identifiant != idMarqueModif %}
                         {{ marque.libelle }}
                         </td><td>
-                            {% if notification != 'rien' and idMarqueNotif is defined and marque.identifiant == idMarqueNotif %}
-                                <button class="btn btn-success btn-xs"><i class="fa fa-check"></i>{{ notification }}</button>
+                            {% if notification != 'rien' and marque.identifiant == idMarqueNotif %}
+                                <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> {{ notification }}</button>
                             {% endif %}
                             <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="demanderModifierMarque" title="Modifier"><i class="fa fa-pencil"></i></button>
                             <button class="btn btn-danger btn-xs" type="submit" name="cmdAction" value="supprimerMarque" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer cette marque ?');"><i class="fa fa-trash-o "></i></button>
@@ -45,17 +45,20 @@
                     {% else %}
                         <input type="text" id="txtNomMarque" name="txtNomMarque" size="24" required minlength="2"  maxlength="24"   value="{{ marque.libelle }}" />     
                         </td>
-                        <td>		 
+                        <td>        
                             <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="validerModifierMarque" title="Enregistrer"><i class="fa fa-save"></i></button>
-                            <button class="btn btn-info btn-xs" type="reset" title="Effacer la saisie"><i class="fa fa-eraser"></i></button>				
+                            <button class="btn btn-info btn-xs" type="reset" title="Effacer la saisie"><i class="fa fa-eraser"></i></button>              
                             <button class="btn btn-warning btn-xs" type="submit" name="cmdAction" value="annulerModifierMarque" title="Annuler"><i class="fa fa-undo"></i></button>
-                        </td>				
+                        </td>              
                     {% endif %}
                 </form>
               </tr>  
             {% endfor %}
             </tbody>
           </table>
-        </div>
-    </section>
-</div>
+        </div><!-- fin div panel-body-->
+    </section><!-- fin section marques-->
+</div><!--fin div col-sm-6-->
+{% endblock %}
+
+

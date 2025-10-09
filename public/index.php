@@ -6,20 +6,18 @@
 * @package default
 */
 // démarrer la session !!!!!!!! A FAIRE AVANT TOUT CODE HTML !!!!!!!!session_start();
-//require 'vue/v_header.php'; // entête des pages HTML
-require 'vue/v_headerTwig.html'; // balise <head> et styles
+require '../templates/v_header.php'; // entête des pages HTML
+require '../templates/v_headerTwig.html'; // balise <head> et styles
 // inclure les bibliothèques de fonctions
 require_once 'app/_config.inc.php';
-require_once 'modele/class.PdoJeux.inc.php';
-//require_once 'include/_forms.inc.php';
+require_once '../src/Controller/modele/class.PdoJeux.inc.php';
+require_once 'include/_forms.inc.php';
 // *** pour twig ***
 // la directive "require 'vendor/autoload.php';" est ajoutée au début de l'application
 // elle permet de charger le script "autoload.php".
-// Ce script a été crée par composer et permet de charger les dépendances une à une dans le
-projet
+// Ce script a été crée par composer et permet de charger les dépendances une à une dans le projet
 require_once 'vendor/autoload.php';
-// la classe FileSystemLoader permet de charger des fichiers contenus dans le dossier indiqué en
-paramètre
+// la classe FileSystemLoader permet de charger des fichiers contenus dans le dossier indiqué en paramètre
 $loader = new \Twig\Loader\FilesystemLoader('vue');
 // la classe Environment permet de stocker la configuration de l'environnement
 // en phase de développement (debug) nous n'utilisons pas le cache
@@ -33,8 +31,7 @@ $twig->addGlobal('session', $_SESSION);
 // Connexion au serveur et à la base (A)
 $db = PdoJeux::getPdoJeux();
 // Si aucun utilisateur connecté, on considère que la page demandée est la page de connexion
-// $_SESSION['idUtilisateur'] est crée lorsqu'un utilisateur autorisé se connecte (dans
-c_connexion.php)
+// $_SESSION['idUtilisateur'] est crée lorsqu'un utilisateur autorisé se connecte (dans c_connexion.php)
 if (!isset($_SESSION['idUtilisateur'])){
 require 'controleur/c_connexion.php';
 } else {

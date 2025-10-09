@@ -79,8 +79,8 @@ class PdoJeux {
 
     public function getLesPlateformes(): array {
   		$requete =  'SELECT idPlateforme as identifiant, libPlateforme as libelle
-                        FROM plateforme
-                        ORDER BY libPlateforme';
+                       FROM plateforme
+                       ORDER BY libPlateforme';
         try	{
             $resultat = PdoJeux::$monPdo->query($requete);
             $tbPlateformes  = $resultat->fetchAll();
@@ -94,61 +94,16 @@ class PdoJeux {
     }
 
     /**
-     * Ajoute une nouvelle plateforme avec le libellé donné en paramètre
-     *
-     * @param string $libPlateforme : le libelle de la plateforme à ajouter
-     * @return int l'identifiant de la plateforme crée
+     * Retourne tous les membres pour listes déroulantes
+     * @return array
      */
-
-    public function ajouterPlateforme(string $libPlateforme): int {
+    public function getLesMembres(): array {
+        $requete = 'SELECT idMembre as identifiant, CONCAT(prenomMembre, " ", nomMembre) as libelle
+                    FROM membre ORDER BY nomMembre, prenomMembre';
         try {
-            $requete_prepare = PdoJeux::$monPdo->prepare("INSERT INTO plateforme "
-                    . "(idPlateforme, libPlateforme) "
-                    . "VALUES (0, :unLibPlateforme) ");
-            $requete_prepare->bindParam(':unLibPlateforme', $libPlateforme, PDO::PARAM_STR);
-            $requete_prepare->execute();
-            // récupérer l'identifiant crée
-            return PdoJeux::$monPdo->lastInsertId();
-        } catch (Exception $e) {
-            die('<div class = "erreur">Erreur dans la requête !<p>'
-                .$e->getmessage().'</p></div>');
-        }
-    }
-
-    /**
-     * Modifie le libellé de la plateforme donnée en paramètre
-     *
-     * @param int $idPlateforme : l'identifiant de la plateforme à modifier
-     * @param string $libPlateforme : le libellé modifié
-     */
-
-    public function modifierPlateforme(int $idPlateforme, string $libPlateforme): void { // Correction de "funtion" en "function"
-        try {
-            $requete_prepare = PdoJeux::$monPdo->prepare("UPDATE plateforme "
-                    . "SET libPlateforme = :unLibPlateforme "
-                    . "WHERE plateforme.idPlateforme = :unIdPlateforme");
-            $requete_prepare->bindParam(':unIdPlateforme', $idPlateforme, PDO::PARAM_INT);
-            $requete_prepare->bindParam(':unLibPlateforme', $libPlateforme, PDO::PARAM_STR);
-            $requete_prepare->execute();
-        } catch (Exception $e) {
-            die('<div class = "erreur">Erreur dans la requête !<p>'
-                .$e->getmessage().'</p></div>');
-        }
-    }
-
-    /**
-     * Supprime la plateforme donnée en paramètre
-     *
-     * @param int $idPlateforme :l'identifiant de la plateforme à supprimer
-     */
-
-    public function supprimerPlateforme(int $idPlateforme): void {
-       try {
-            $requete_prepare = PdoJeux::$monPdo->prepare("DELETE FROM plateforme "
-                    . "WHERE plateforme.idPlateforme = :unIdPlateforme");
-            $requete_prepare->bindParam(':unIdPlateforme', $idPlateforme, PDO::PARAM_INT);
-            $requete_prepare->execute();
-        } catch (Exception $e) {
+            $resultat = PdoJeux::$monPdo->query($requete);
+            return $resultat->fetchAll();
+        } catch (PDOException $e) {
             die('<div class = "erreur">Erreur dans la requête !<p>'
                 .$e->getmessage().'</p></div>');
         }
@@ -276,7 +231,6 @@ class PdoJeux {
         }
     }
 
-
     //==============================================================================
     //
     //	METHODES POUR LA GESTION DES Marques
@@ -291,8 +245,8 @@ class PdoJeux {
 
     public function getLesMarques(): array {
   		$requete =  'SELECT idMarque as identifiant, nomMarque as libelle
-                        FROM marque
-                        ORDER BY nomMarque';
+                       FROM marque
+                       ORDER BY nomMarque';
         try	{
             $resultat = PdoJeux::$monPdo->query($requete);
             $tbMarques  = $resultat->fetchAll();
@@ -378,8 +332,8 @@ class PdoJeux {
 
     public function getLesPegis(): array {
   		$requete =  'SELECT idPegi as identifiant, ageLimite as age, descPegi as description
-                        FROM pegi
-                        ORDER BY ageLimite';
+                       FROM pegi
+                       ORDER BY ageLimite';
         try	{
             $resultat = PdoJeux::$monPdo->query($requete);
             $tbPegis  = $resultat->fetchAll();
@@ -457,6 +411,42 @@ class PdoJeux {
 			die('<div class = "erreur">Erreur dans la requête !<p>'
 				.$e->getmessage().'</p></div>');
 		}
+    }
+
+    /**
+     * Retourne tous les genres avec nom du spécialiste et nb de jeux
+     * @return array
+     */
+    public function getLesGenresComplet(): array {
+        $requete = 'SELECT G.idGenre as identifiant, G.libGenre as libelle,
+                            G.idSpecialiste AS idSpecialiste,
+                            CONCAT(M.prenomMembre, " ", M.nomMembre) AS nomSpecialiste,
+                            (SELECT COUNT(refJeu) FROM jeu_video AS J WHERE J.idGenre = G.idGenre) AS nbJeux
+                    FROM genre AS G
+                    LEFT OUTER JOIN membre AS M ON G.idSpecialiste = M.idMembre
+                    ORDER BY G.libGenre';
+        try {
+            $resultat = PdoJeux::$monPdo->query($requete);
+            return $resultat->fetchAll();
+        } catch (PDOException $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>' . $e->getmessage() . '</p></div>');
+        }
+    }
+
+    /**
+     * Retourne un membre par login et mot de passe haché
+     */
+    public function getUnMembre(string $login, string $mdpSha512) {
+        $requete = 'SELECT idMembre, nomMembre, prenomMembre FROM membre WHERE login=:login AND mdp=:mdp';
+        try {
+            $stmt = PdoJeux::$monPdo->prepare($requete);
+            $stmt->bindParam(':login', $login, PDO::PARAM_STR);
+            $stmt->bindParam(':mdp', $mdpSha512, PDO::PARAM_STR);
+            $stmt->execute();
+            return $stmt->fetch();
+        } catch (PDOException $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>' . $e->getmessage() . '</p></div>');
+        }
     }
 
 
