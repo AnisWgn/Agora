@@ -1,3 +1,5 @@
+{% extends "layout.html.twig" %}
+{% block central %}
 <!-- page start-->
 <div class="col-sm-6">
     <section class="panel">
@@ -15,7 +17,6 @@
               </tr>
             </thead>
             <tbody>
-            <!-- formulaire pour ajouter un nouveau pegi-->
             <tr>
             <form action="index.php?uc=gererPegis" method="post">
                 <td>Nouveau</td>
@@ -31,11 +32,10 @@
                 </td>
             </form>
             </tr>
-
             {% for pegi in tbPegis %}
               <tr>
                 <form action="index.php?uc=gererPegis" method="post">
-                <td>{{ pegi.identifiant }}<input type="hidden" name="txtIdPegi" value="{{ pegi.identifiant }}" /></td>
+                <td>{{ pegi.identifiant }}<input type="hidden"  name="txtIdPegi" value="{{ pegi.identifiant }}" /></td>
                 <td>
                     {% if pegi.identifiant != idPegiModif %}
                         {{ pegi.age }}
@@ -43,7 +43,7 @@
                             {{ pegi.description }}
                         </td><td>
                             {% if notification != 'rien' and idPegiNotif is defined and pegi.identifiant == idPegiNotif %}
-                                <button class="btn btn-success btn-xs"><i class="fa fa-check"></i>{{ notification }}</button>
+                                <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> {{ notification }}</button>
                             {% endif %}
                             <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="demanderModifierPegi" title="Modifier"><i class="fa fa-pencil"></i></button>
                             <button class="btn btn-danger btn-xs" type="submit" name="cmdAction" value="supprimerPegi" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer ce pegi?');"><i class="fa fa-trash-o "></i></button>
@@ -68,4 +68,6 @@
         </div>
     </section>
 </div>
+{% endblock %}
+
 

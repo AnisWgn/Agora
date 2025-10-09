@@ -1,3 +1,5 @@
+{% extends "layout.html.twig" %}
+{% block central %}
 <div class="col-sm-12">
     <section class="panel">
         <div class="chat-room-head">
@@ -51,42 +53,44 @@
                             </td>
                         </form>
                     </tr>
-
                     {% for jeu in tbJeux %}
                         <tr>
                             <form action="index.php?uc=gererJeux" method="post">
-                                <input type="hidden" name="refJeu" value="{{ jeu.refJeu }}">
-                                
+                                <input type="hidden" name="refJeu" value="{{ jeu.refJeu|e }}">
                                 {% if refJeuModif is defined and jeu.refJeu == refJeuModif %}
-                                    <td>{{ jeu.refJeu }}</td>
-                                    <td><input type="text" name="nom" value="{{ jeu.nom }}" size="20"></td>
-                                    <td><input type="number" name="prix" step="0.01" value="{{ jeu.prix }}" style="width:80px;"></td>
-                                    <td><input type="date" name="dateParution" value="{{ jeu.dateParution }}" style="width:130px;"></td>
+                                    <td>{{ jeu.refJeu|e }}</td>
+                                    <td><input type="text" name="nom" value="{{ jeu.nom|e }}" size="20"></td>
+                                    <td><input type="number" name="prix" step="0.01" value="{{ jeu.prix|e }}" style="width:80px;"></td>
+                                    <td><input type="date" name="dateParution" value="{{ jeu.dateParution|e }}" style="width:130px;"></td>
                                     <td>
                                         <select name="idGenre">
                                             {% for genre in tbGenres %}
-                                                <option value="{{ genre.identifiant }}" {{ jeu.libGenre == genre.libelle ? 'selected' : '' }}>{{ genre.libelle }}</option>
+                                                {% set selected = (jeu.libGenre == genre.libelle) ? 'selected' : '' %}
+                                                <option value="{{ genre.identifiant }}" {{ selected }}>{{ genre.libelle }}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
                                     <td>
                                         <select name="idMarque">
                                             {% for marque in tbMarques %}
-                                                <option value="{{ marque.identifiant }}" {{ jeu.nomMarque == marque.libelle ? 'selected' : '' }}>{{ marque.libelle }}</option>
+                                                {% set selected = (jeu.nomMarque == marque.libelle) ? 'selected' : '' %}
+                                                <option value="{{ marque.identifiant }}" {{ selected }}>{{ marque.libelle }}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
                                     <td>
                                         <select name="idPlateforme">
                                             {% for plateforme in tbPlateformes %}
-                                                <option value="{{ plateforme.identifiant }}" {{ jeu.libPlateforme == plateforme.libelle ? 'selected' : '' }}>{{ plateforme.libelle }}</option>
+                                                {% set selected = (jeu.libPlateforme == plateforme.libelle) ? 'selected' : '' %}
+                                                <option value="{{ plateforme.identifiant }}" {{ selected }}>{{ plateforme.libelle }}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
                                     <td>
                                         <select name="idPegi">
                                             {% for pegi in tbPegis %}
-                                                <option value="{{ pegi.identifiant }}" {{ jeu.ageLimite == pegi.age ? 'selected' : '' }}>{{ pegi.age }}</option>
+                                                {% set selected = (jeu.ageLimite == pegi.age) ? 'selected' : '' %}
+                                                <option value="{{ pegi.identifiant }}" {{ selected }}>{{ pegi.age }}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -95,16 +99,16 @@
                                         <button class="btn btn-warning btn-xs" type="submit" name="cmdAction" value="annulerModifierJeu" title="Annuler"><i class="fa fa-undo"></i></button>
                                     </td>
                                 {% else %}
-                                    <td>{{ jeu.refJeu }}</td>
-                                    <td>{{ jeu.nom }}</td>
-                                    <td>{{ jeu.prix }} €</td>
+                                    <td>{{ jeu.refJeu|e }}</td>
+                                    <td>{{ jeu.nom|e }}</td>
+                                    <td>{{ jeu.prix|e }} €</td>
                                     <td>{{ jeu.dateParution|date('d/m/Y') }}</td>
-                                    <td>{{ jeu.libGenre }}</td>
-                                    <td>{{ jeu.nomMarque }}</td>
-                                    <td>{{ jeu.libPlateforme }}</td>
-                                    <td>{{ jeu.ageLimite }}</td>
+                                    <td>{{ jeu.libGenre|e }}</td>
+                                    <td>{{ jeu.nomMarque|e }}</td>
+                                    <td>{{ jeu.libPlateforme|e }}</td>
+                                    <td>{{ jeu.ageLimite|e }}</td>
                                     <td>
-                                        {% if notification != 'rien' and refJeuNotif is defined and jeu.refJeu == refJeuNotif %}
+                                        {% if notification != 'rien' and jeu.refJeu == refJeuNotif %}
                                             <button class="btn btn-success btn-xs"><i class="fa fa-check"></i> {{ notification }}</button>
                                         {% endif %}
                                         <button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="demanderModifierJeu" title="Modifier"><i class="fa fa-pencil"></i></button>
@@ -119,3 +123,6 @@
         </div>
     </section>
 </div>
+{% endblock %}
+
+
