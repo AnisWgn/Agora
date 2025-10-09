@@ -9,7 +9,7 @@ MAIN SIDEBAR MENU
 <div id="sidebar" class="nav-collapse ">
 <!-- sidebar menu start-->
 <ul class="sidebar-menu" id="nav-accordion">
-<p class="centered"><a href="profile.html"><img src="web/img/greece-1162816_640.jpg"
+<p class="centered"><a href="profile.html"><img src="{{ asset('assets/img/greece-1162816_640.jpg') }}"
 class="img-circle" width="80"></a></p>
 <h5 class="centered">MJC Agora</h5>
 <li class="sub-menu">
@@ -22,12 +22,13 @@ href="index.php" ><i class="fa fa-desktop"></i>
 </a>
 <ul class="sub">
 <li><a href="index.php?uc=gererJeux&action=afficherJeux">Jeux</a></li>
-<li><a href="index.php?uc=gererGenres&action=afficherGenres">Genres</a></li>
+<li><a href="{{ path('genres_afficher') }}">Genres</a></li>
 <li><a
 href="index.php?uc=gererPlateformes&action=afficherPlateformes">Plateformes</a></li>
 <li><a href="index.php?uc=gererMarques&action=afficherMarques">Marques</a></li>
 <li><a href="index.php?uc=gererPegis&action=afficherPegis">Pegi</a></li>
-<li><a href="index.php?uc=gererTournois&action=afficherTournois">Tournois</a></li>
+<li><a
+href="index.php?uc=gererTournois&action=afficherTournois">Tournois</a></li>
 </ul>
 </li>
 <li class="sub-menu">
@@ -47,8 +48,7 @@ href="javascript:;">
 </li>
 <li class="sub-menu">
 <a
-{% if menuActif is defined and menuActif == 'Formations' %} class="active" {%
-endif %}
+{% if menuActif is defined and menuActif == 'Formations' %} class="active" %}
 href="javascript:;">
 <i class="fa fa-th"></i>
 <span>Formations</span>
@@ -63,8 +63,7 @@ href="javascript:;">
 </li>
 <li class="sub-menu">
 <a
-{% if menuActif is defined and menuActif == 'Membres' %} class="active" {% endif
-%}
+{% if menuActif is defined and menuActif == 'Membres' %} class="active" {% endif %}
 href="javascript:;">
 <i class="fa fa-user-md"></i>
 <span>Membres</span>
@@ -79,8 +78,7 @@ href="javascript:;">
 </li>
 <li class="sub-menu">
 <a
-{% if menuActif is defined and menuActif == 'Intervenants' %} class="active" {%
-endif %}
+{% if menuActif is defined and menuActif == 'Intervenants' %} class="active" {% endif %}
 href="javascript:;">
 <i class="fa fa-smile-o"></i>
 <span>Intervenants</span>

@@ -2,7 +2,7 @@
 // src/Controller/ConnexionController.php
 namespace App\Controller;
 require_once 'modele/class.PdoJeux.inc.php';
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
