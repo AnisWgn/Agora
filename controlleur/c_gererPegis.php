@@ -33,13 +33,30 @@ switch($action) {
         break;
     }
 }
-// affichage
+
 $tbPegis = $db->getLesPegis();
-echo $twig->render('lesPegis.html.twig', array(
-'menuActif' => 'Jeux',
-'tbPegis' => $tbPegis,
-'idPegiModif' => $idPegiModif,
-'idPegiNotif' => isset($idPegiNotif) ? $idPegiNotif : -1,
-'notification' => $notification
-));
+
+// --- DEBUT MODIFICATION : Remplacer l'ancien 'require' par ce bloc ---
+
+// 1. Charger le chargeur automatique de Composer
+require_once 'vendor/autoload.php';
+$loader = new \Twig\Loader\FilesystemLoader('vue');
+
+// 3. Initialiser l'environnement Twig
+$twig = new \Twig\Environment($loader);
+
+// 4. Définir les variables pour le template
+$variables = [
+    'menuActif' => $menuActif,
+    'tbPegis' => $tbPegis,
+    'idPegiModif' => $idPegiModif,
+    'notification' => $notification,
+];
+// S'assurer que idPegiNotif est toujours défini pour éviter les erreurs Twig
+if (isset($idPegiNotif)) {
+    $variables['idPegiNotif'] = $idPegiNotif;
+}
+
+// 5. Rendre le template et l'afficher
+echo $twig->render('v_lesPegis.html.twig', $variables);
 ?>
