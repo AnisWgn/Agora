@@ -1,4 +1,4 @@
-{% extends "layout.html.twig" %}
+{% extends "base.html.twig" %}
 {% block central %}
 <!-- page start-->
 <div class="col-sm-6">
@@ -34,8 +34,9 @@
             </tr>
             {% for pegi in tbPegis %}
               <tr>
-                <form action="index.php?uc=gererPegis" method="post">
-                <td>{{ pegi.identifiant }}<input type="hidden"  name="txtIdPegi" value="{{ pegi.identifiant }}" /></td>
+                <form action="index.php?uc=gererPegis" method="post" style="display: contents;">
+                <input type="hidden" name="txtIdPegi" value="{{ pegi.identifiant }}" />
+                <td>{{ pegi.identifiant }}</td>
                 <td>
                     {% if pegi.identifiant != idPegiModif %}
                         {{ pegi.age }}

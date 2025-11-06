@@ -1,4 +1,4 @@
-{% extends "layout.html.twig" %}
+{% extends "base.html.twig" %}
 {% block central %}
 <div class="col-sm-12">
     <section class="panel">
@@ -55,7 +55,7 @@
                     </tr>
                     {% for jeu in tbJeux %}
                         <tr>
-                            <form action="index.php?uc=gererJeux" method="post">
+                            <form action="index.php?uc=gererJeux" method="post" style="display: contents;">
                                 <input type="hidden" name="refJeu" value="{{ jeu.refJeu|e }}">
                                 {% if refJeuModif is defined and jeu.refJeu == refJeuModif %}
                                     <td>{{ jeu.refJeu|e }}</td>

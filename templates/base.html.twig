@@ -42,9 +42,12 @@
  <a href="{{ path('accueil') }}" class="logo"><b>Ago<span>rA</span></b></a>
  <!--logo end-->
  <ul class="nav pull-right top-menu">
- {% if (app.session.has('idUtilisateur') ) %}
+ {% if app is defined and app.session is defined and app.session.has('idUtilisateur') %}
  <a href="" class="userAgo"> {{ app.session.get('prenomUtilisateur') }} {{ app.session.get('nomUtilisateur') }}</a>
  <li><a class="logout" href="{{ path('deconnexion') }}">Se déconnecter</a></li>
+ {% elseif session is defined and session.idUtilisateur is defined %}
+ <a href="" class="userAgo"> {{ session.prenomUtilisateur }} {{ session.nomUtilisateur }}</a>
+ <li><a class="logout" href="index.php?uc=deconnexion">Se déconnecter</a></li>
  {% else %}
  <li><a class="logout" href="{{ path('accueil') }}">Se connecter</a></li>
  {% endif %}
@@ -52,12 +55,16 @@
  </header>
  <!--header end-->
  
- {% block menu %}
- {% if (app.session.has('idUtilisateur') ) %}
+{% block menu %}
+{% set isLogged = (app is defined and app.session is defined and app.session.has('idUtilisateur')) or (session is defined and session.idUtilisateur is defined) %}
+{% if isLogged %}
  {{ include('menu.html.twig') }}
- {% endif %}
- {% endblock %}
+{% endif %}
+{% endblock %}
  
+{# Affichage des messages flash #}
+{{ include('messages.html.twig') }}
+
  <section id="main-content">
  <section class="wrapper">
  {% block central %}{% endblock %}

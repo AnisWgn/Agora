@@ -1,4 +1,4 @@
-{% extends "layout.html.twig" %}
+{% extends "base.html.twig" %}
 {% block central %}
 <!-- page start-->
 <div class="col-sm-8">
@@ -45,54 +45,40 @@ class="fa fa-eraser"></i></button>
 </tr>
 {% for key, genre in tbGenres %}
 <tr>
-<!-- formulaire pour modifier et supprimer les genres-->
-<form action="index.php?uc=gererGenres" method="post">
-<td>{{ genre.identifiant }}<input type="hidden" name="txtIdGenre" value="{{
-genre.identifiant }}" /></td>
+<form action="index.php?uc=gererGenres" method="post" style="display: contents;">
+<input type="hidden" name="txtIdGenre" value="{{ genre.identifiant }}" />
+<td>{{ genre.identifiant }}</td>
 <td>
 {% if genre.identifiant != idGenreModif %}
 {{ genre.libelle }}
-</td>
-<td>
-{{ genre.nomSpecialiste }}
-</td>
-<td>
-{{genre.nbJeux}}
-</td>
-<td>
-{% if notification != 'rien' and genre.identifiant == idGenreNotif %}
-<button class="btn btn-success btn-xs"><i class="fa fa-check"></i> {{
-notification }}</button>
-{% endif %}
-<button class="btn btn-primary btn-xs" type="submit" name="cmdAction"
-value="demanderModifierGenre" title="Modifier"><i class="fa fa-pencil"></i></button>
-<button class="btn btn-danger btn-xs" type="submit" name="cmdAction"
-value="supprimerGenre" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer ce
-genre ?');"><i class="fa fa-trash-o "></i></button>
-</td>
 {% else %}
-<input type="text" id="txtLibGenre" name="txtLibGenre" size="24" required
-minlength="4" maxlength="24" value="{{ genre.libelle }}" />
-</td>
-<td>
-<!--<?php afficherListe($tbMembres, 'lstMembre', 1, $genre->idSpecialiste); ?>-
-->
-{% set tbObjets, name, size, idSelect = tbMembres, 'lstMembre', 1,
-genre.idSpecialiste %}
-{{ include('liste.html.twig') }}
-</td>
-<td>
-{{ genre.nbJeu }}
-</td>
-<td>
-<button class="btn btn-primary btn-xs" type="submit" name="cmdAction"
-value="validerModifierGenre" title="Enregistrer"><i class="fa fa-save"></i></button>
-<button class="btn btn-info btn-xs" type="reset" title="Effacer la saisie"><i
-class="fa fa-eraser"></i></button>
-<button class="btn btn-warning btn-xs" type="submit" name="cmdAction"
-value="annulerModifierGenre" title="Annuler"><i class="fa fa-undo"></i></button>
-</td>
+<input type="text" id="txtLibGenre" name="txtLibGenre" size="24" required minlength="4" maxlength="24" value="{{ genre.libelle }}" />
 {% endif %}
+</td>
+<td>
+{% if genre.identifiant != idGenreModif %}
+{{ genre.nomSpecialiste }}
+{% else %}
+{% set tbObjets, name, size, idSelect = tbMembres, 'lstMembre', 1, genre.idSpecialiste %}
+{{ include('liste.html.twig') }}
+{% endif %}
+</td>
+<td>
+{{ genre.nbJeux }}
+</td>
+<td>
+{% if genre.identifiant != idGenreModif %}
+{% if notification != 'rien' and genre.identifiant == idGenreNotif %}
+<button class="btn btn-success btn-xs"><i class="fa fa-check"></i> {{ notification }}</button>
+{% endif %}
+<button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="demanderModifierGenre" title="Modifier"><i class="fa fa-pencil"></i></button>
+<button class="btn btn-danger btn-xs" type="submit" name="cmdAction" value="supprimerGenre" title="Supprimer" onclick="return confirm('Voulez-vous vraiment supprimer ce genre ?');"><i class="fa fa-trash-o "></i></button>
+{% else %}
+<button class="btn btn-primary btn-xs" type="submit" name="cmdAction" value="validerModifierGenre" title="Enregistrer"><i class="fa fa-save"></i></button>
+<button class="btn btn-info btn-xs" type="reset" title="Effacer la saisie"><i class="fa fa-eraser"></i></button>
+<button class="btn btn-warning btn-xs" type="submit" name="cmdAction" value="annulerModifierGenre" title="Annuler"><i class="fa fa-undo"></i></button>
+{% endif %}
+</td>
 </form>
 </tr>
 {% endfor %}

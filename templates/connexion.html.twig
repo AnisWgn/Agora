@@ -1,4 +1,4 @@
-{% extends "layout.html.twig" %}
+{% extends "base.html.twig" %}
 {% block central %}
 <!--
 ****************************************************************************************************
@@ -8,22 +8,16 @@ MAIN CONTENT
 ******************************************************* -->
 <div id="login-page">
 <div class="container connexion">
-<form class="form-login" method="post" action="index.php?uc=connexion">
+<form class="form-login" method="post" action="index.php?uc=connexion&action=validerConnexion">
 <h2 class="form-login-heading">Identification utilisateur</h2>
 <div class="login-wrap">
-<!--<?php
-if (isset($erreur)) {
-echo '<div class = "erreurCnx"><p>'.$erreur.'</p></div>';
-}
-?>-->
-{% if (erreur is defined) %}
+{% if (erreur is defined) and erreur %}
 <div class = "erreurCnx"><p>{{ erreur }}</p></div>
 {% endif %}
 <input type="text" class="form-control" name="txtLogin" id="txtLogin" placeholder="Login"
 required autofocus />
 <br>
-<input type="password" class="form-control" name="txtMdp" id="txtMdp" placeholder="Mot de
-passe" required />
+<input type="password" class="form-control" name="txtMdp" id="txtMdp" placeholder="Mot de passe" required />
 <div class="pull-right login-social-link">
 <!--La version 5 du langage HTML a ajouté un nouveau type d'attribut, qui n'est pas
 interprété par le navigateur.
@@ -44,10 +38,9 @@ hexadecimal
 -->
 <button class="btn btn-theme btn-block" type="submit" name="cmdAction"
 value="validerConnexion"
-title="Se connecter" onclick="document.getElementById('hdMdp').value =
-hex_sha512(document.getElementById('txtMdp').value);document.getElementById('txtMdp').value = ' ';">
-<i class="fa fa-lock"></i> Se connecter</button>
-<!-- champ caché pour le mot de passe haché -->
+title="Se connecte">
+<i class="fa fa-lock"></i> Se connecte</button>
+<!-- champ caché pour le mot de passe haché (optionnel si JS de hachage présent) -->
 <input type="hidden" name="hdMdp" id="hdMdp" />
 <hr>
 </div>

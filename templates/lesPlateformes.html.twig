@@ -1,4 +1,4 @@
-{% extends "layout.html.twig" %}
+{% extends "base.html.twig" %}
 {% block central %}
 <!-- page start-->
 <div class="col-sm-6">
@@ -30,8 +30,9 @@
             </tr>
             {% for plateforme in tbPlateformes %}
               <tr>
-                <form action="index.php?uc=gererPlateformes" method="post">
-                <td>{{ plateforme.identifiant }}<input type="hidden"  name="txtIdPlateforme" value="{{ plateforme.identifiant }}" /></td>
+                <form action="index.php?uc=gererPlateformes" method="post" style="display: contents;">
+                <input type="hidden" name="txtIdPlateforme" value="{{ plateforme.identifiant }}" />
+                <td>{{ plateforme.identifiant }}</td>
                 <td>
                     {% if plateforme.identifiant != idPlateformeModif %}
                         {{ plateforme.libelle }}

@@ -94,6 +94,63 @@ class PdoJeux {
     }
 
     /**
+     * Ajoute une nouvelle plateforme avec le libellé donné en paramètre
+     *
+     * @param string $libPlateforme : le libellé de la plateforme à ajouter
+     * @return int l'identifiant de la plateforme crée
+     */
+    public function ajouterPlateforme(string $libPlateforme): int {
+        try {
+            $requete_prepare = PdoJeux::$monPdo->prepare("INSERT INTO plateforme "
+                    . "(idPlateforme, libPlateforme) "
+                    . "VALUES (0, :unLibPlateforme) ");
+            $requete_prepare->bindParam(':unLibPlateforme', $libPlateforme, PDO::PARAM_STR);
+            $requete_prepare->execute();
+            return PdoJeux::$monPdo->lastInsertId();
+        } catch (Exception $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>'
+                .$e->getmessage().'</p></div>');
+        }
+    }
+
+    /**
+     * Modifie le libellé de la plateforme donnée en paramètre
+     *
+     * @param int $idPlateforme : l'identifiant de la plateforme à modifier
+     * @param string $libPlateforme : le libellé modifié
+     */
+    public function modifierPlateforme(int $idPlateforme, string $libPlateforme): void {
+        try {
+            $requete_prepare = PdoJeux::$monPdo->prepare("UPDATE plateforme "
+                    . "SET libPlateforme = :unLibPlateforme "
+                    . "WHERE plateforme.idPlateforme = :unIdPlateforme");
+            $requete_prepare->bindParam(':unIdPlateforme', $idPlateforme, PDO::PARAM_INT);
+            $requete_prepare->bindParam(':unLibPlateforme', $libPlateforme, PDO::PARAM_STR);
+            $requete_prepare->execute();
+        } catch (Exception $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>'
+                .$e->getmessage().'</p></div>');
+        }
+    }
+
+    /**
+     * Supprime la plateforme donnée en paramètre
+     *
+     * @param int $idPlateforme : l'identifiant de la plateforme à supprimer
+     */
+    public function supprimerPlateforme(int $idPlateforme): void {
+       try {
+            $requete_prepare = PdoJeux::$monPdo->prepare("DELETE FROM plateforme "
+                    . "WHERE plateforme.idPlateforme = :unIdPlateforme");
+            $requete_prepare->bindParam(':unIdPlateforme', $idPlateforme, PDO::PARAM_INT);
+            $requete_prepare->execute();
+        } catch (Exception $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>'
+                .$e->getmessage().'</p></div>');
+        }
+    }
+
+    /**
      * Retourne tous les membres pour listes déroulantes
      * @return array
      */
@@ -437,7 +494,8 @@ class PdoJeux {
      * Retourne un membre par login et mot de passe haché
      */
     public function getUnMembre(string $login, string $mdpSha512) {
-        $requete = 'SELECT idMembre, nomMembre, prenomMembre FROM membre WHERE login=:login AND mdp=:mdp';
+        // table `membre` uses column names loginMembre and mdpMembre in the SQL dump
+        $requete = 'SELECT idMembre, nomMembre, prenomMembre FROM membre WHERE loginMembre = :login AND mdpMembre = :mdp';
         try {
             $stmt = PdoJeux::$monPdo->prepare($requete);
             $stmt->bindParam(':login', $login, PDO::PARAM_STR);
@@ -456,12 +514,17 @@ class PdoJeux {
 	 * @param string $libGenre : le libelle du genre à ajouter
 	 * @return int l'identifiant du genre crée
 	 */
-    public function ajouterGenre(string $libGenre): int {
+    public function ajouterGenre(string $libGenre, ?int $idSpecialiste = null): int {
         try {
             $requete_prepare = PdoJeux::$monPdo->prepare("INSERT INTO genre "
-                    . "(idGenre, libGenre) "
-                    . "VALUES (0, :unLibGenre) ");
+                    . "(idGenre, libGenre, idSpecialiste) "
+                    . "VALUES (0, :unLibGenre, :idSpecialiste) ");
             $requete_prepare->bindParam(':unLibGenre', $libGenre, PDO::PARAM_STR);
+            if ($idSpecialiste === null) {
+                $requete_prepare->bindValue(':idSpecialiste', null, PDO::PARAM_NULL);
+            } else {
+                $requete_prepare->bindParam(':idSpecialiste', $idSpecialiste, PDO::PARAM_INT);
+            }
             $requete_prepare->execute();
 			// récupérer l'identifiant crée
 			return PdoJeux::$monPdo->lastInsertId();
@@ -478,13 +541,18 @@ class PdoJeux {
      * @param int $idGenre : l'identifiant du genre à modifier
      * @param string $libGenre : le libellé modifié
      */
-    public function modifierGenre(int $idGenre, string $libGenre): void { // C'est la bonne version de la fonction
+    public function modifierGenre(int $idGenre, string $libGenre, ?int $idSpecialiste = null): void { // C'est la bonne version de la fonction
         try {
             $requete_prepare = PdoJeux::$monPdo->prepare("UPDATE genre "
-                    . "SET libGenre = :unLibGenre "
+                    . "SET libGenre = :unLibGenre, idSpecialiste = :idSpecialiste "
                     . "WHERE genre.idGenre = :unIdGenre");
             $requete_prepare->bindParam(':unIdGenre', $idGenre, PDO::PARAM_INT);
             $requete_prepare->bindParam(':unLibGenre', $libGenre, PDO::PARAM_STR);
+            if ($idSpecialiste === null) {
+                $requete_prepare->bindValue(':idSpecialiste', null, PDO::PARAM_NULL);
+            } else {
+                $requete_prepare->bindParam(':idSpecialiste', $idSpecialiste, PDO::PARAM_INT);
+            }
             $requete_prepare->execute();
         } catch (Exception $e) {
             die('<div class = "erreur">Erreur dans la requête !<p>'

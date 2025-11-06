@@ -1,4 +1,4 @@
-{% extends "layout.html.twig" %}
+{% extends "base.html.twig" %}
 {% block central %}
 <!-- page start-->
 <div class="col-sm-6">
@@ -30,8 +30,9 @@
             </tr>
             {% for marque in tbMarques %}
               <tr>
-                <form action="index.php?uc=gererMarques" method="post">
-                <td>{{ marque.identifiant }}<input type="hidden"  name="txtIdMarque" value="{{ marque.identifiant }}" /></td>
+                <form action="index.php?uc=gererMarques" method="post" style="display: contents;">
+                <input type="hidden" name="txtIdMarque" value="{{ marque.identifiant }}" />
+                <td>{{ marque.identifiant }}</td>
                 <td>
                     {% if marque.identifiant != idMarqueModif %}
                         {{ marque.libelle }}
