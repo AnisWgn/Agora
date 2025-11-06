@@ -1,28 +1,47 @@
 <?php
-
 /**
- *  AGORA
- * 	©  Logma, 2019
- * @package default
+ * Classe d'accès aux données de l'application AGORA
+ * 
+ * Cette classe implémente le pattern Singleton pour la connexion à la base de données.
+ * Elle fournit toutes les méthodes nécessaires pour :
+ * - La gestion des plateformes de jeux
+ * - La gestion des jeux vidéo
+ * - La gestion des marques
+ * - La gestion des classifications PEGI
+ * - La gestion des genres de jeux
+ * - La gestion des membres et de l'authentification
+ * 
+ * Utilise PDO pour l'accès à la base de données MySQL
+ * 
+ * @package App\Model
  * @author MD
- * @version    1.0
- * @link       http://www.php.net/manual/fr/book.pdo.php
- *
- * Classe d'accès aux données.
- * Utilise les services de la classe PDO
- * pour l'application AGORA
- * Les attributs sont tous statiques,
- * $monPdo de type PDO
- * $monPdoJeux qui contiendra l'unique instance de la classe
+ * @copyright Logma, 2019
+ * @version 1.0
+ * @link http://www.php.net/manual/fr/book.pdo.php Documentation PDO
  */
 class PdoJeux {
-
+    /**
+     * Instance unique de PDO
+     * @var PDO
+     */
     private static $monPdo;
+
+    /**
+     * Instance unique de la classe (Pattern Singleton)
+     * @var PdoJeux|null
+     */
     private static $monPdoJeux = null;
 
     /**
-     * Constructeur privé, crée l'instance de PDO qui sera sollicitée
-     * pour toutes les méthodes de la classe
+     * Constructeur privé
+     * 
+     * Crée l'unique instance de PDO utilisée pour toutes les méthodes de la classe
+     * Configure les options de connexion :
+     * - Encodage UTF-8
+     * - Mode d'erreur : exceptions
+     * - Mode de récupération : objets
+     * 
+     * @throws PDOException En cas d'échec de connexion
      */
     private function __construct() {
 		// A) >>>>>>>>>>>>>>>   Connexion au serveur et à la base
@@ -65,19 +84,20 @@ class PdoJeux {
         return PdoJeux::$monPdoJeux;
     }
 
-    //==============================================================================
-    //
-    //	METHODES POUR LA GESTION DES PLATEFORMES
-    //
-    //==============================================================================
+//==============================================================================
+//                          GESTION DES PLATEFORMES
+//==============================================================================
 
     /**
-     * Retourne toutes les plateformes sous forme d'un tableau d'objets
-     *
-     * @return array le tableau d'objets  (Plateforme)
-     */
-
-    public function getLesPlateformes(): array {
+     * Récupère la liste de toutes les plateformes de jeux
+     * 
+     * Retourne un tableau d'objets avec pour chaque plateforme :
+     * - identifiant : ID unique de la plateforme
+     * - libelle : Nom de la plateforme
+     * 
+     * @return array Tableau d'objets Plateforme triés par libellé
+     * @throws PDOException En cas d'erreur de base de données
+     */    public function getLesPlateformes(): array {
   		$requete =  'SELECT idPlateforme as identifiant, libPlateforme as libelle
                        FROM plateforme
                        ORDER BY libPlateforme';
@@ -167,15 +187,24 @@ class PdoJeux {
     }
 
     //==============================================================================
-    //
-    //	METHODES POUR LA GESTION DES JEUX
-    //
+    //                          GESTION DES JEUX VIDÉO
     //==============================================================================
 
     /**
-     * Retourne tous les jeux avec les détails des tables associées.
-     *
-     * @return array le tableau d'objets (Jeu)
+     * Récupère la liste complète des jeux avec leurs informations détaillées
+     * 
+     * Pour chaque jeu, retourne :
+     * - refJeu : Référence unique du jeu
+     * - nom : Titre du jeu
+     * - prix : Prix en euros
+     * - dateParution : Date de sortie
+     * - libGenre : Genre du jeu
+     * - nomMarque : Éditeur/développeur
+     * - libPlateforme : Plateforme de jeu
+     * - ageLimite : Classification PEGI
+     * 
+     * @return array Tableau d'objets Jeu triés par nom
+     * @throws PDOException En cas d'erreur de base de données
      */
     public function getLesJeux(): array {
         $requete = 'SELECT
