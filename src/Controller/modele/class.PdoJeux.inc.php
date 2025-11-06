@@ -50,7 +50,7 @@ class PdoJeux {
 			$options = array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\'');
 			// Crée une instance (un objet) PDO qui représente une connexion à la base
 			PdoJeux::$monPdo = new PDO($_ENV['AGORA_DSN'],$_ENV['AGORA_DB_USER'],$_ENV['AGORA_DB_PWD'], $options);
-			// configure l'attribut ATTR_ERRMODE pour définir le mode de rapport d'erreurs
+			// configure l'attribut ATTR_ERRMODE pour définir le mode de rapport d'erreursagora.membre
 			// PDO::ERRMODE_EXCEPTION: émet une exception
 			PdoJeux::$monPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 			// configure l'attribut ATTR_DEFAULT_FETCH_MODE pour définir le mode de récupération par défaut
