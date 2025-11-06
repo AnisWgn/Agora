@@ -67,7 +67,13 @@
 
  <section id="main-content">
  <section class="wrapper">
- {% block central %}{% endblock %}
+ <div class="container-fluid">
+{% block central %}
+{% endblock %}
+{% block body %}
+{% endblock %}
+</div>
+
  </section>
  </section>
  <!-- /MAIN CONTENT -->
