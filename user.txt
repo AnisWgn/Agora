@@ -1,5 +1,0 @@
-Login : nouveauLogin
-Mot de passe : motdepasse
-Pour ajouter un nouvelle utilisateur directement depuis la bdd il faut lors du insert mettre ceci dans la partie 
-motdepasse SHA2('monmotdepasse', 512) afin que le "monmotdepasse" quand il est ajouté soit hashé en sha512 si il est entré en clair
-la connexion ne fonctionne pas (c'est logique mais on sait jamais)
