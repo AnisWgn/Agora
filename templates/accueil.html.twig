@@ -1,18 +1,27 @@
+{# 
+ # Template de la page d'accueil
+ #
+ # Affiche :
+ # - Une image de fond représentant une agora grecque
+ # - Un message de bienvenue personnalisé avec le nom de l'utilisateur
+ #
+ # Hérite du template de base qui fournit la structure commune
+ #}
 {% extends "base.html.twig" %}
+
+{# Bloc principal du contenu #}
 {% block central %}
-<!--
-****************************************************************************************************
-******************************************************
-MAIN CONTENT
-****************************************************************************************************
-******************************************************* -->
-<div class="container">
-<div id="blocImage">
-<!--<img src="vue/img/greece-1162816_640.jpg" alt="Agora en Grèce" class="responsive">-->
-<img src="{{ asset('assets/img/greece-3348294_1280.jpg') }}" alt="" class="responsive">
-<div id="blocImageTexte">
-Bonjour {{ app.session.get('prenomUtilisateur') }} {{ app.session.get('nomUtilisateur') }}
-</div>
-</div>
-</div>
+    <div class="container">
+        <div id="blocImage">
+            {# Image principale de l'agora #}
+            <img src="{{ asset('assets/img/greece-3348294_1280.jpg') }}" 
+                 alt="Agora grecque antique" 
+                 class="responsive">
+
+            {# Message de bienvenue personnalisé #}
+            <div id="blocImageTexte">
+                Bonjour {{ app.session.get('prenomUtilisateur') }} {{ app.session.get('nomUtilisateur') }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

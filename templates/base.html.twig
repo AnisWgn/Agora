@@ -1,13 +1,31 @@
+{# 
+ # Template de base de l'application
+ #
+ # Ce template définit la structure commune à toutes les pages :
+ # - En-tête HTML avec métadonnées
+ # - Feuilles de style communes
+ # - Structure de navigation
+ # - Barre latérale (menu)
+ # - Zone de contenu principal
+ # - Pied de page
+ # 
+ # Blocs disponibles :
+ # - stylesheets : CSS additionnels
+ # - menu : Menu latéral (peut être désactivé)
+ # - central : Contenu principal de la page
+ # - body : Contenu alternatif (rarement utilisé)
+ #}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
- <meta charset="utf-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta name="description" content="">
- <meta name="author" content="sio">
- <meta name="keyword" content="MJC, Agora">
- <title>AgorA - Administration</title>
- {% block stylesheets %}
+    {# Métadonnées de base #}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interface d'administration de la MJC Agora">
+    <meta name="author" content="sio">
+    <meta name="keyword" content="MJC, Agora">
+    <title>AgorA - Administration</title>
+    {% block stylesheets %}
  <!-- Bootstrap core CSS -->
  <link href="{{ asset('assets/lib/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"/>
  <!--external css-->
@@ -30,28 +48,58 @@
  Author: TemplateMag.com
  License: https://templatemag.com/license/
  ======================================================= -->
-</head>
+ </head>
 <body>
- <section id="container">
- <!--header start-->
- <header class="header black-bg">
- <div class="sidebar-toggle-box">
- <div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle Navigation"></div>
- </div>
- <!--logo start-->
- <a href="{{ path('accueil') }}" class="logo"><b>Ago<span>rA</span></b></a>
- <!--logo end-->
- <ul class="nav pull-right top-menu">
- {% if app is defined and app.session is defined and app.session.has('idUtilisateur') %}
- <a href="" class="userAgo"> {{ app.session.get('prenomUtilisateur') }} {{ app.session.get('nomUtilisateur') }}</a>
- <li><a class="logout" href="{{ path('deconnexion') }}">Se déconnecter</a></li>
- {% elseif session is defined and session.idUtilisateur is defined %}
- <a href="" class="userAgo"> {{ session.prenomUtilisateur }} {{ session.nomUtilisateur }}</a>
- <li><a class="logout" href="index.php?uc=deconnexion">Se déconnecter</a></li>
- {% else %}
- <li><a class="logout" href="{{ path('accueil') }}">Se connecter</a></li>
- {% endif %}
- </ul>
+    <section id="container">
+        {# En-tête de l'application #}
+        <header class="header black-bg">
+            {# Bouton de basculement du menu latéral #}
+            <div class="sidebar-toggle-box">
+                <div class="fa fa-bars tooltips" 
+                     data-placement="right" 
+                     data-original-title="Toggle Navigation">
+                </div>
+            </div>
+
+            {# Logo et lien vers l'accueil #}
+            <a href="{{ path('accueil') }}" class="logo">
+                <b>Ago<span>rA</span></b>
+            </a>
+
+            {# Menu utilisateur en haut à droite #}
+                           <ul class="nav pull-right top-menu">
+                    {# Gestion de l'affichage selon l'état de connexion #}
+                    {% if app is defined and app.session is defined and app.session.has('idUtilisateur') %}
+                        {# Utilisateur connecté - Version Symfony #}
+                        <a href="" class="userAgo">
+                            {{ app.session.get('prenomUtilisateur') }} 
+                            {{ app.session.get('nomUtilisateur') }}
+                        </a>
+                        <li>
+                            <a class="logout" href="{{ path('deconnexion') }}">
+                                Se déconnecter
+                            </a>
+                        </li>
+                    {% elseif session is defined and session.idUtilisateur is defined %}
+                        {# Utilisateur connecté - Version classique #}
+                        <a href="" class="userAgo">
+                            {{ session.prenomUtilisateur }} 
+                            {{ session.nomUtilisateur }}
+                        </a>
+                        <li>
+                            <a class="logout" href="index.php?uc=deconnexion">
+                                Se déconnecter
+                            </a>
+                        </li>
+                    {% else %}
+                        {# Utilisateur non connecté #}
+                        <li>
+                            <a class="logout" href="{{ path('accueil') }}">
+                                Se connecter
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
  </header>
  <!--header end-->
  
@@ -65,33 +113,42 @@
 {# Affichage des messages flash #}
 {{ include('messages.html.twig') }}
 
- <section id="main-content">
- <section class="wrapper">
- <div class="container-fluid">
-{% block central %}
-{% endblock %}
-{% block body %}
-{% endblock %}
-</div>
+        {# Zone de contenu principal #}
+        <section id="main-content">
+            <section class="wrapper">
+                <div class="container-fluid">
+                    {# Bloc pour le contenu principal des pages #}
+                    {% block central %}
+                    {% endblock %}
 
- </section>
- </section>
- <!-- /MAIN CONTENT -->
- <!--main content end-->
- <!--footer start-->
- <footer class="site-footer">
- <div class="text-center">
- <p>Crée par Logma avec le template bootstrap Dashio :
- &copy; Copyrights <strong>Dashio</strong>. All Rights Reserved
- </p>
- <div class="credits">
- Created with Dashio template by <a href="https://templatemag.com/">TemplateMag</a>
- </div>
- <a href="#" class="go-top">
- <i class="fa fa-angle-up"></i>
- </a>
- </div>
- </footer>
+                    {# Bloc alternatif pour le contenu (rarement utilisé) #}
+                    {% block body %}
+                    {% endblock %}
+                </div>
+            </section>
+        </section>
+
+        {# Pied de page #}
+        <footer class="site-footer">
+            <div class="text-center">
+                {# Informations de copyright #}
+                <p>
+                    Crée par Logma avec le template bootstrap Dashio :
+                    &copy; Copyrights <strong>Dashio</strong>. All Rights Reserved
+                </p>
+
+                {# Crédits du template #}
+                <div class="credits">
+                    Created with Dashio template by 
+                    <a href="https://templatemag.com/">TemplateMag</a>
+                </div>
+
+                {# Bouton retour en haut #}
+                <a href="#" class="go-top">
+                    <i class="fa fa-angle-up"></i>
+                </a>
+            </div>
+        </footer>
  <!--footer end-->
  </section>
  <!-- js placed at the end of the document so the pages load faster -->

@@ -1,17 +1,23 @@
+{# 
+ # Template de mise en page principale de l'application
+ #
+ # Structure :
+ # - Barre de navigation supérieure
+ # - Menu latéral
+ # - Zone de contenu principal
+ # - Pied de page
+ #}
 <body>
-<section id="container">
-<!--
-************************************************************************************************
-**********************************************************
-TOP BAR CONTENT & NOTIFICATIONS
-************************************************************************************************
-*********************************************************** -->
-<!--header start-->
-<header class="header black-bg">
-<div class="sidebar-toggle-box">
-<div class="fa fa-bars tooltips" data-placement="right" data-original-title="Toggle
-Navigation"></div>
-</div>
+    <section id="container">
+        {# Barre de navigation supérieure #}
+        <header class="header black-bg">
+            {# Bouton de basculement du menu latéral #}
+            <div class="sidebar-toggle-box">
+                <div class="fa fa-bars tooltips" 
+                     data-placement="right" 
+                     data-original-title="Toggle Navigation">
+                </div>
+            </div>
 <!--logo start-->
 <a href="index.php" class="logo"><b>Ago<span>rA</span></b></a>
 <!--logo end-->
@@ -35,25 +41,17 @@ href="index.php?uc=deconnexion&action=demanderDeconnexion">Se déconnecter</a></
 </div>
 </header>
 <!--header end-->
-<!--
-************************************************************************************************
-**********************************************************
-MAIN SIDEBAR MENU
-************************************************************************************************
-*********************************************************** -->
-{% block menu %}
-{{ include('menu.html.twig') }}
-{% endblock %}
-<!--
-************************************************************************************************
-**********************************************************
-MAIN CONTENT
-************************************************************************************************
-*********************************************************** -->
-<section id="main-content">
-<section class="wrapper">
-{% block central %}
-{% endblock %}
+        {# Menu latéral principal #}
+        {% block menu %}
+            {{ include('menu.html.twig') }}
+        {% endblock %}
+
+        {# Zone de contenu principal #}
+        <section id="main-content">
+            <section class="wrapper">
+                {# Bloc pour le contenu spécifique de chaque page #}
+                {% block central %}
+                {% endblock %}
 </section>
 </section>
 <!-- /MAIN CONTENT -->
@@ -81,19 +79,23 @@ Created with Dashio template by <a href="https://templatemag.com/">TemplateMag</
 </footer>
 <!--footer end-->
 </section>
-<!-- js placed at the end of the document so the pages load faster -->
-<script src="web/lib/jquery/jquery.min.js"></script> <!-- pour dérouler menu -->
-<script src="web/lib/bootstrap/js/bootstrap.min.js"></script>
-<script class="include" type="text/javascript"
-src="web/lib/jquery.dcjqaccordion.2.7.js"></script> <!-- pour dérouler menu -->
-<script src="web/lib/jquery.scrollTo.min.js"></script> <!-- pour dérouler menu -->
-<!--common script for all pages-->
-<script src="web/lib/common-scripts.js"></script>
-<!--script pour le calendrier-->
-<script src="web/lib/jquery-ui-1.9.2.custom.min.js"></script>
-<script src="web/lib/fullcalendar/fullcalendar.min.js"></script>
-<script src="web/lib/calendar-conf-events.js"></script>
-<!-- pour la connexion -->
-<script src="web/libAgora/sha512.js"></script>
-</body>
+        {# Scripts JavaScript placés en fin de document pour un chargement plus rapide #}
+        
+        {# Bibliothèques principales #}
+        <script src="web/lib/jquery/jquery.min.js"></script>
+        <script src="web/lib/bootstrap/js/bootstrap.min.js"></script>
+
+        {# Scripts pour la navigation #}
+        <script class="include" type="text/javascript" src="web/lib/jquery.dcjqaccordion.2.7.js"></script>
+        <script src="web/lib/jquery.scrollTo.min.js"></script>
+        <script src="web/lib/common-scripts.js"></script>
+
+        {# Scripts pour le calendrier #}
+        <script src="web/lib/jquery-ui-1.9.2.custom.min.js"></script>
+        <script src="web/lib/fullcalendar/fullcalendar.min.js"></script>
+        <script src="web/lib/calendar-conf-events.js"></script>
+
+        {# Script de hachage pour la connexion sécurisée #}
+        <script src="web/libAgora/sha512.js"></script>
+    </body>
 </html>

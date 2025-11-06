@@ -1,18 +1,30 @@
+{# 
+ # En-tête HTML commun à toutes les pages
+ #
+ # Contient :
+ # - Les méta-informations
+ # - Le titre de l'application
+ # - Les feuilles de style communes
+ # - Les bibliothèques CSS externes
+ #}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="">
-<meta name="author" content="sio">
-<meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid,
-Retina">
-<title>AgorA - Administration</title>
-<!-- Bootstrap core CSS -->
-<link href="/assets/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<!--external css-->
-<link href="/assets/lib/font-awesome/css/font-awesome.css" rel="stylesheet" />
-<link href="/assets/lib/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet" />
+    {# Méta-informations #}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interface d'administration Agora">
+    <meta name="author" content="sio">
+    <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive">
+    
+    <title>AgorA - Administration</title>
+
+    {# Styles de base Bootstrap #}
+    <link href="/assets/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    {# Bibliothèques CSS externes #}
+    <link href="/assets/lib/font-awesome/css/font-awesome.css" rel="stylesheet">
+    <link href="/assets/lib/fullcalendar/bootstrap-fullcalendar.css" rel="stylesheet">
 <!--external css pour les dates dans la gestion des tournois-->
 <link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap-fileupload/bootstrap-fileupload.css" />
 <link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap-datepicker/css/datepicker.css" />

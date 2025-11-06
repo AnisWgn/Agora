@@ -1,13 +1,23 @@
-<select name="{{name}}" id="{{ name }}" size="{{ size }}" >
-{% for key, objet in tbObjets %}
-{# l'élément en paramètre est présélectionné #}
-{% if objet.identifiant != idSelect %}
-{# si l'identifiant de l'objet n'est pas l'identifiant présélectionné #}
-<option value="{{ objet.identifiant }}">
-{{ objet.libelle }}</option>
-{% else %}
-<option selected value="{{ objet.identifiant }}">
-{{ objet.libelle }}</option>
-{% endif %}
-{% endfor %}
+{# 
+ # Composant de liste déroulante réutilisable
+ #
+ # Paramètres attendus :
+ # - name : Nom du champ select (utilisé pour name et id)
+ # - size : Nombre de lignes visibles
+ # - tbObjets : Tableau d'objets à afficher dans la liste
+ # - idSelect : ID de l'élément à présélectionner (optionnel)
+ #
+ # Chaque objet doit avoir :
+ # - identifiant : Valeur de l'option
+ # - libelle : Texte à afficher
+ #}
+<select name="{{ name }}" id="{{ name }}" size="{{ size }}">
+    {% for key, objet in tbObjets %}
+        <option 
+            value="{{ objet.identifiant }}"
+            {% if objet.identifiant == idSelect %}selected{% endif %}
+        >
+            {{ objet.libelle }}
+        </option>
+    {% endfor %}
 </select>

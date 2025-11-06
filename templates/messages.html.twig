@@ -1,11 +1,29 @@
+{# 
+ # Template pour l'affichage des messages flash
+ #
+ # Affiche tous les messages flash de la session en cours
+ # avec le style Bootstrap approprié selon leur type
+ # (success, danger, warning, info)
+ #
+ # Usage : Inclure ce template avec {{ include('messages.html.twig') }}
+ #}
+
 {% block flash_messages %}
-{% for type, messages in app.session.flashbag.all() %}
- {% for message in messages %}
- <div class="alert alert-{{ type }} alert-dismissible" role="alert">
- <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
- {{ message | raw }}
- </div>
- {% endfor %}
-{% endfor %}
+    {# Parcours de tous les types de messages #}
+    {% for type, messages in app.session.flashbag.all() %}
+        {# Affichage de chaque message du type #}
+        {% for message in messages %}
+            <div class="alert alert-{{ type }} alert-dismissible" role="alert">
+                {# Bouton pour fermer le message #}
+                <button type="button" class="close" data-dismiss="alert">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Fermer</span>
+                </button>
+                
+                {# Contenu du message (autorise le HTML brut) #}
+                {{ message | raw }}
+            </div>
+        {% endfor %}
+    {% endfor %}
 {% endblock %}
 
