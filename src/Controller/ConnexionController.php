@@ -68,14 +68,24 @@ try {
     return $this->render('connexion.html.twig');
 }
 }
-#[Route('/deconnexion', name: 'deconnexion')]
-public function deconnexion(SessionInterface $session)
-{
-// supprimer la session
-$session->clear();
-$session->invalidate();
-// redirection vers l'accueil
-return $this->redirectToRoute('accueil');
-}
+    /**
+     * Gestion de la déconnexion
+     * 
+     * Supprime la session et redirige vers la page d'accueil
+     * 
+     * @Route("/deconnexion", name="deconnexion")
+     * @param SessionInterface $session Session à détruire
+     * @return Response Redirection vers l'accueil
+     */
+    #[Route('/deconnexion', name: 'deconnexion')]
+    public function deconnexion(SessionInterface $session)
+    {
+        // Nettoyage complet de la session
+        $session->clear();
+        $session->invalidate();
+
+        // Redirection vers la page d'accueil
+        return $this->redirectToRoute('accueil');
+    }
 }
 ?>
