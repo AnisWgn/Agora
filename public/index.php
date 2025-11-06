@@ -1,76 +1,116 @@
 <?php
 /**
-* Page d'accueil de l'application AgoraBo
-* Point d'entrée unique de l'application
-* @author MD
-* @package default
-*/
-// démarrer la session !!!!!!!! A FAIRE AVANT TOUT CODE HTML !!!!!!!!
-// start session before sending any output
+ * Page d'accueil de l'application AgoraBo
+ * Point d'entrée unique de l'application gérant les jeux vidéo
+ * 
+ * Ce fichier gère:
+ * - L'initialisation de la session
+ * - La configuration de Twig
+ * - Le routage des requêtes vers les différents contrôleurs
+ * - La gestion des genres, plateformes, marques, pegis et jeux
+ * 
+ * @author MD
+ * @package default
+ * @version 1.0
+ */
+
+// ====================================
+// ===== INITIALISATION GÉNÉRALE =====
+// ====================================
+
+// Démarrage de la session - IMPORTANT: Doit être fait avant tout affichage HTML
 if (session_status() === PHP_SESSION_NONE) {
-	session_start();
+    session_start();
 }
-// suppress deprecation notices coming from vendor code (temporary)
+
+// Configuration des erreurs (masquer les dépréciations temporairement)
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
-require __DIR__ . '/../templates/v_headerTwig.html'; // balise <head> et styles
-// inclure les bibliothèques de fonctions
+// ====================================
+// ===== CHARGEMENT DES DÉPENDANCES =====
+// ====================================
+
+// Inclusion de l'en-tête HTML et des styles
+require __DIR__ . '/../templates/v_headerTwig.html';
+
+// Chargement de la classe principale de gestion des jeux
 require_once __DIR__ . '/../src/Controller/modele/class.PdoJeux.inc.php';
-//require_once 'include/_forms.inc.php';
-// *** pour twig ***
-// la directive "require 'vendor/autoload.php';" est ajoutée au début de l'application
-// elle permet de charger le script "autoload.php".
-// Ce script a été crée par composer et permet de charger les dépendances une à une dans le projet
+
+// Chargement de l'autoloader Composer
+// Permet le chargement automatique de toutes les dépendances du projet
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load environment variables from .env into $_ENV/$_SERVER when present
+// ====================================
+// ===== CONFIGURATION ENVIRONNEMENT =====
+// ====================================
+
+// Chargement des variables d'environnement depuis le fichier .env
 if (file_exists(__DIR__ . '/../.env')) {
-	// use Symfony Dotenv component (installed via composer) to populate env vars
-	try {
-		(new \Symfony\Component\Dotenv\Dotenv())->bootEnv(__DIR__ . '/../.env');
-	} catch (Throwable $e) {
-		// If Dotenv is not available or fails, continue — PdoJeux will report missing vars.
-	}
+    try {
+        // Utilisation du composant Dotenv de Symfony pour charger les variables
+        (new \Symfony\Component\Dotenv\Dotenv())->bootEnv(__DIR__ . '/../.env');
+    } catch (Throwable $e) {
+        // En cas d'erreur, on continue - PdoJeux signalera les variables manquantes
+    }
 }
-// la classe FileSystemLoader permet de charger des fichiers contenus dans le dossier indiqué en paramètre
-// point loader to the project's `templates` directory (absolute path)
+
+// ====================================
+// ===== CONFIGURATION DE TWIG =====
+// ====================================
+
+// Création du chargeur de templates Twig
+// Pointe vers le dossier 'templates' du projet
 $loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/../templates');
-// la classe Environment permet de stocker la configuration de l'environnement
-// en phase de développement (debug) nous n'utilisons pas le cache
+
+// Initialisation de l'environnement Twig
+// En développement : pas de cache et mode debug activé
 $twig = new \Twig\Environment($loader, array(
-	// use defined constants when available; otherwise fall back to safe defaults
-	'cache' => (defined('TWIG_CACHE') ? TWIG_CACHE : false),
-	'debug' => (defined('TWIG_DEBUG') ? TWIG_DEBUG : false),
+    'cache' => (defined('TWIG_CACHE') ? TWIG_CACHE : false),
+    'debug' => (defined('TWIG_DEBUG') ? TWIG_DEBUG : false),
 ));
-// pour que twig connaisse la variable globale de session
+// ====================================
+// ===== CONFIGURATION DES FONCTIONS TWIG =====
+// ====================================
+
+// Rendre la session disponible dans tous les templates Twig
 $twig->addGlobal('session', $_SESSION);
 
-// Provide a simple `asset()` function for templates (fallback when Symfony Asset extension is not registered)
+// Fonction asset() pour gérer les chemins des ressources statiques
+// Utilisée dans les templates pour les liens vers CSS, JS, images, etc.
 $twig->addFunction(new \Twig\TwigFunction('asset', function (string $path) {
-	// if absolute URL, return as-is
-	if (preg_match('#^(https?:)?//#', $path)) {
-		return $path;
-	}
-	// Templates reference assets under 'assets/...'; ensure leading slash
-	return '/' . ltrim($path, '/');
+    // Si l'URL est absolue, la retourner telle quelle
+    if (preg_match('#^(https?:)?//#', $path)) {
+        return $path;
+    }
+    // Assurer que le chemin commence par un slash
+    return '/' . ltrim($path, '/');
 }));
 
-// Provide a minimal `path()` function as a fallback for simple route names used in the templates
+// Fonction path() pour gérer les routes de l'application
+// Permet d'avoir des URLs cohérentes dans toute l'application
 $twig->addFunction(new \Twig\TwigFunction('path', function (string $routeName) {
-	$map = [
-		'accueil' => 'index.php',
-		'deconnexion' => 'index.php?uc=deconnexion',
-		'genres_afficher' => 'index.php?uc=gererGenres&action=afficherGenres',
-		// add more mappings here if your templates use other route names
-	];
-	return $map[$routeName] ?? ('index.php');
+    $map = [
+        'accueil' => 'index.php',
+        'deconnexion' => 'index.php?uc=deconnexion',
+        'genres_afficher' => 'index.php?uc=gererGenres&action=afficherGenres',
+        // Ajouter d'autres routes ici si nécessaire
+    ];
+    return $map[$routeName] ?? ('index.php');
 }));
-// *** twig ***
-// Connexion au serveur et à la base (A)
+// ====================================
+// ===== CONNEXION BASE DE DONNÉES =====
+// ====================================
+
+// Établissement de la connexion à la base de données
 $db = PdoJeux::getPdoJeux();
-// Si aucun utilisateur connecté, on considère que la page demandée est la page de connexion
-// $_SESSION['idUtilisateur'] est crée lorsqu'un utilisateur autorisé se connecte (dans c_connexion.php)
-if (!isset($_SESSION['idUtilisateur'])){
+
+// ====================================
+// ===== GESTION AUTHENTIFICATION =====
+// ====================================
+
+// Vérification si l'utilisateur est connecté
+// La variable de session 'idUtilisateur' est créée lors de la connexion réussie
+if (!isset($_SESSION['idUtilisateur'])) {
     // Traitement POST local de la connexion (fallback si c_connexion.php absent)
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' &&
         (($_GET['uc'] ?? '') === 'connexion') && (($_GET['action'] ?? '') === 'validerConnexion')) {
@@ -105,14 +145,20 @@ if (!isset($_SESSION['idUtilisateur'])){
 		echo $twig->render('connexion.html.twig');
 	}
 } else {
-// Si uc non défini, on considère que la page demandée est la page d'accueil
-if (!isset($_GET['uc'])) {
-$_GET['uc'] = 'index';
-}
-// Récupère l'identifiant de la page passé via l'URL
-$uc = $_GET['uc'];
-// selon la valeur du use case demandé(uc) on inclut le contrôleur secondaire
-switch ($uc) {
+    // ====================================
+    // ===== ROUTAGE DE L'APPLICATION =====
+    // ====================================
+
+    // Si aucune route n'est spécifiée, rediriger vers l'accueil
+    if (!isset($_GET['uc'])) {
+        $_GET['uc'] = 'index';
+    }
+
+    // Récupération de la route demandée (use case)
+    $uc = $_GET['uc'];
+
+    // Routage vers le contrôleur approprié
+    switch ($uc) {
 case 'index' :
 {
 //$menuActif = '';
@@ -463,8 +509,12 @@ case 'deconnexion' :
 }
 }
 }
-// Fermeture de la connexion (C)
+// ====================================
+// ===== NETTOYAGE ET FERMETURE =====
+// ====================================
+
+// Fermeture de la connexion à la base de données
 $db = null;
-// pied de page
-//require("vue/v_footer.html") ;
+
+// Note: Le pied de page est géré par Twig dans le template de base
 ?>

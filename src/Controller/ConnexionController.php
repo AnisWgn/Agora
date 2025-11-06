@@ -1,22 +1,47 @@
 <?php
-// src/Controller/ConnexionController.php
+/**
+ * Contrôleur de gestion de la connexion/déconnexion
+ * 
+ * Ce contrôleur gère :
+ * - La validation des informations de connexion
+ * - La création de la session utilisateur
+ * - La déconnexion et la destruction de session
+ * 
+ * @package App\Controller
+ * @author Original
+ * @version 1.0
+ */
+
 namespace App\Controller;
+
+// Dépendances
 require_once 'modele/class.PdoJeux.inc.php';
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use PdoJeux;
+
 class ConnexionController extends AbstractController
 {
-#[Route('/connexion/valider', name: 'connexion_valider')]
-public function validerConnexion(SessionInterface $session, Request $request)
-{
-$login = (string) $request->request->get('txtLogin');
-$mdpSaisi = (string) $request->request->get('txtMdp');
-$mdpHacheClient = (string) $request->request->get('hdMdp');
-// Si le JS de hachage n'est pas chargé, on hache côté serveur
-$mdpPourVerif = $mdpHacheClient !== '' ? $mdpHacheClient : hash('sha512', $mdpSaisi);
+    /**
+     * Validation des informations de connexion
+     * 
+     * @Route("/connexion/valider", name="connexion_valider")
+     * @param SessionInterface $session Gestion de la session
+     * @param Request $request Données de la requête
+     * @return Response Redirection selon le résultat de la connexion
+     */
+    #[Route('/connexion/valider', name: 'connexion_valider')]
+    public function validerConnexion(SessionInterface $session, Request $request)
+    {
+        // Récupération des données du formulaire
+        $login = (string) $request->request->get('txtLogin');
+        $mdpSaisi = (string) $request->request->get('txtMdp');
+        $mdpHacheClient = (string) $request->request->get('hdMdp');
+
+        // Hachage du mot de passe si non fait côté client
+        $mdpPourVerif = $mdpHacheClient !== '' ? $mdpHacheClient : hash('sha512', $mdpSaisi);
 
 // Vérification base de données
 try {
