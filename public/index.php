@@ -159,13 +159,13 @@ if (!isset($_SESSION['idUtilisateur'])) {
 
     // Routage vers le contrôleur approprié
     switch ($uc) {
-case 'index' :
+case 'index':
 {
-//$menuActif = '';
-//require 'vue/v_menu.php';
-//require 'vue/v_accueil.php';
-echo $twig->render('accueil.html.twig');
-break;
+    // Affichage de la page d'accueil
+    echo $twig->render('accueil.html.twig', [
+        'menuActif' => 'Accueil'
+    ]);
+    break;
 }
 case 'gererGenres' :
 {
