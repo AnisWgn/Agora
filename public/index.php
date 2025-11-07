@@ -41,6 +41,34 @@ require_once __DIR__ . '/../src/Controller/modele/class.PdoJeux.inc.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // ====================================
+// ===== VÉRIFICATION ROUTES SYMFONY =====
+// ====================================
+
+// Détection des routes Symfony (commençant par /)
+$requestUri = $_SERVER['REQUEST_URI'] ?? '';
+$pathInfo = parse_url($requestUri, PHP_URL_PATH);
+
+// Si c'est une route Symfony (commence par / et n'est pas index.php)
+if ($pathInfo && $pathInfo !== '/' && $pathInfo !== '/index.php' && !isset($_GET['uc'])) {
+    // Chargement des variables d'environnement
+    if (file_exists(__DIR__ . '/../.env')) {
+        (new \Symfony\Component\Dotenv\Dotenv())->bootEnv(__DIR__ . '/../.env');
+    }
+    
+    // Création du Kernel Symfony
+    $kernel = new \App\Kernel($_ENV['APP_ENV'] ?? 'dev', (bool)($_ENV['APP_DEBUG'] ?? true));
+    
+    // Création de la requête Symfony
+    $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+    
+    // Traitement de la requête
+    $response = $kernel->handle($request);
+    $response->send();
+    $kernel->terminate($request, $response);
+    exit;
+}
+
+// ====================================
 // ===== CONFIGURATION ENVIRONNEMENT =====
 // ====================================
 
@@ -88,14 +116,50 @@ $twig->addFunction(new \Twig\TwigFunction('asset', function (string $path) {
 
 // Fonction path() pour gérer les routes de l'application
 // Permet d'avoir des URLs cohérentes dans toute l'application
-$twig->addFunction(new \Twig\TwigFunction('path', function (string $routeName) {
-    $map = [
-        'accueil' => 'index.php',
-        'deconnexion' => 'index.php?uc=deconnexion',
-        'genres_afficher' => 'index.php?uc=gererGenres&action=afficherGenres',
-        // Ajouter d'autres routes ici si nécessaire
+$twig->addFunction(new \Twig\TwigFunction('path', function (string $routeName, array $params = []) {
+    // Mapping des routes Symfony
+    $symfonyRoutes = [
+        'genres_afficher' => '/genres',
+        'genres_ajouter' => '/genres/ajouter',
+        'genres_demandermodifier' => '/genres/demandermodifier',
+        'genres_validermodifier' => '/genres/validermodifier',
+        'genres_supprimer' => '/genres/supprimer',
+        'plateformes_afficher' => '/plateformes',
+        'plateformes_ajouter' => '/plateformes/ajouter',
+        'plateformes_demandermodifier' => '/plateformes/demandermodifier',
+        'plateformes_validermodifier' => '/plateformes/validermodifier',
+        'plateformes_supprimer' => '/plateformes/supprimer',
+        'marques_afficher' => '/marques',
+        'marques_ajouter' => '/marques/ajouter',
+        'marques_demandermodifier' => '/marques/demandermodifier',
+        'marques_validermodifier' => '/marques/validermodifier',
+        'marques_supprimer' => '/marques/supprimer',
+        'pegis_afficher' => '/pegis',
+        'pegis_ajouter' => '/pegis/ajouter',
+        'pegis_demandermodifier' => '/pegis/demandermodifier',
+        'pegis_validermodifier' => '/pegis/validermodifier',
+        'pegis_supprimer' => '/pegis/supprimer',
+        'jeux_afficher' => '/jeux',
+        'jeux_ajouter' => '/jeux/ajouter',
+        'jeux_demandermodifier' => '/jeux/demandermodifier',
+        'jeux_validermodifier' => '/jeux/validermodifier',
+        'jeux_supprimer' => '/jeux/supprimer',
+        'tournois_afficher' => '/tournois',
+        'accueil' => '/',
+        'deconnexion' => '/deconnexion',
     ];
-    return $map[$routeName] ?? ('index.php');
+    
+    // Si c'est une route Symfony, retourner l'URL Symfony
+    if (isset($symfonyRoutes[$routeName])) {
+        $url = $symfonyRoutes[$routeName];
+        // Ajouter les paramètres de requête si nécessaire
+        if (!empty($params)) {
+            $url .= '?' . http_build_query($params);
+        }
+        return $url;
+    }
+    
+    return $legacyMap[$routeName] ?? 'index.php';
 }));
 // ====================================
 // ===== CONNEXION BASE DE DONNÉES =====
@@ -169,328 +233,33 @@ case 'index':
 }
 case 'gererGenres' :
 {
-	$cGerer = __DIR__ . '/controleur/c_gererGenres.php';
-	if (file_exists($cGerer)) {
-		require $cGerer;
-	} else {
-		// Charger les données depuis la base
-		try {
-			$tbMembres = $db->getLesMembres();
-			$tbGenres = $db->getLesGenresComplet();
-			// Initialiser les variables nécessaires
-			$idGenreModif = -1;
-			$idGenreNotif = -1;
-			$notification = 'rien';
-			
-			// Traitement des actions POST (ajouter, modifier, supprimer)
-			if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-				$action = $_POST['cmdAction'] ?? '';
-				if ($action === 'ajouterNouveauGenre') {
-					$libGenre = $_POST['txtLibGenre'] ?? '';
-					$idSpecialiste = !empty($_POST['lstMembre']) ? (int)$_POST['lstMembre'] : null;
-					if ($libGenre !== '') {
-						$idNouveau = $db->ajouterGenre($libGenre, $idSpecialiste);
-						$idGenreNotif = $idNouveau;
-						$notification = 'Ajouté';
-						// Recharger les données
-						$tbGenres = $db->getLesGenresComplet();
-					}
-				} elseif ($action === 'demanderModifierGenre') {
-					$idGenreModif = (int)($_POST['txtIdGenre'] ?? -1);
-				} elseif ($action === 'validerModifierGenre') {
-					$idGenre = (int)($_POST['txtIdGenre'] ?? -1);
-					$libGenre = $_POST['txtLibGenre'] ?? '';
-					$idSpecialiste = !empty($_POST['lstMembre']) ? (int)$_POST['lstMembre'] : null;
-					if ($idGenre > 0 && $libGenre !== '') {
-						$db->modifierGenre($idGenre, $libGenre, $idSpecialiste);
-						$idGenreNotif = $idGenre;
-						$notification = 'Modifié';
-						$idGenreModif = -1;
-						// Recharger les données
-						$tbGenres = $db->getLesGenresComplet();
-					}
-				} elseif ($action === 'annulerModifierGenre') {
-					$idGenreModif = -1;
-				} elseif ($action === 'supprimerGenre') {
-					$idGenre = (int)($_POST['txtIdGenre'] ?? -1);
-					if ($idGenre > 0) {
-						$db->supprimerGenre($idGenre);
-						$idGenreNotif = $idGenre;
-						$notification = 'Supprimé';
-						// Recharger les données
-						$tbGenres = $db->getLesGenresComplet();
-					}
-				}
-			}
-			
-			echo $twig->render('lesGenres.html.twig', [
-				'menuActif' => 'Jeux',
-				'tbGenres' => $tbGenres,
-				'tbMembres' => $tbMembres,
-				'idGenreModif' => $idGenreModif,
-				'idGenreNotif' => $idGenreNotif,
-				'notification' => $notification
-			]);
-		} catch (Throwable $e) {
-			echo '<div class="erreur">Erreur lors du chargement des genres : ' . htmlspecialchars($e->getMessage()) . '</div>';
-		}
-	}
-break;
+    // Redirection vers la route Symfony
+    header('Location: /genres');
+    exit;
 }
 case 'gererPlateformes' :
 {
-    $cPlat = __DIR__ . '/controleur/c_gererPlateformes.php';
-    if (file_exists($cPlat)) {
-        require $cPlat;
-    } else {
-        try {
-            $tbPlateformes = $db->getLesPlateformes();
-            $idPlateformeModif = -1; $idPlateformeNotif = -1; $notification = 'rien';
-            
-            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-                $action = $_POST['cmdAction'] ?? '';
-                if ($action === 'ajouterNouvellePlateforme') {
-                    $libPlateforme = $_POST['txtLibPlateforme'] ?? '';
-                    if ($libPlateforme !== '') {
-                        $idNouveau = $db->ajouterPlateforme($libPlateforme);
-                        $idPlateformeNotif = $idNouveau;
-                        $notification = 'Ajouté';
-                        $tbPlateformes = $db->getLesPlateformes();
-                    }
-                } elseif ($action === 'demanderModifierPlateforme') {
-                    $idPlateformeModif = (int)($_POST['txtIdPlateforme'] ?? -1);
-                } elseif ($action === 'validerModifierPlateforme') {
-                    $idPlateforme = (int)($_POST['txtIdPlateforme'] ?? -1);
-                    $libPlateforme = $_POST['txtLibPlateforme'] ?? '';
-                    if ($idPlateforme > 0 && $libPlateforme !== '') {
-                        $db->modifierPlateforme($idPlateforme, $libPlateforme);
-                        $idPlateformeNotif = $idPlateforme;
-                        $notification = 'Modifié';
-                        $idPlateformeModif = -1;
-                        $tbPlateformes = $db->getLesPlateformes();
-                    }
-                } elseif ($action === 'annulerModifierPlateforme') {
-                    $idPlateformeModif = -1;
-                } elseif ($action === 'supprimerPlateforme') {
-                    $idPlateforme = (int)($_POST['txtIdPlateforme'] ?? -1);
-                    if ($idPlateforme > 0) {
-                        $db->supprimerPlateforme($idPlateforme);
-                        $idPlateformeNotif = $idPlateforme;
-                        $notification = 'Supprimé';
-                        $tbPlateformes = $db->getLesPlateformes();
-                    }
-                }
-            }
-            
-            echo $twig->render('lesPlateformes.html.twig', [
-                'menuActif' => 'Jeux',
-                'tbPlateformes' => $tbPlateformes,
-                'idPlateformeModif' => $idPlateformeModif,
-                'idPlateformeNotif' => $idPlateformeNotif,
-                'notification' => $notification
-            ]);
-        } catch (Throwable $e) {
-            echo '<div class="erreur">Erreur plateformes: ' . htmlspecialchars($e->getMessage()) . '</div>';
-        }
-    }
-    break;
+    // Redirection vers la route Symfony
+    header('Location: /plateformes');
+    exit;
 }
 case 'gererMarques' :
 {
-    $cMarq = __DIR__ . '/controleur/c_gererMarques.php';
-    if (file_exists($cMarq)) {
-        require $cMarq;
-    } else {
-        try {
-            $tbMarques = $db->getLesMarques();
-            $idMarqueModif = -1; $idMarqueNotif = -1; $notification = 'rien';
-            
-            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-                $action = $_POST['cmdAction'] ?? '';
-                if ($action === 'ajouterNouvelleMarque') {
-                    $nomMarque = $_POST['txtNomMarque'] ?? '';
-                    if ($nomMarque !== '') {
-                        $idNouveau = $db->ajouterMarque($nomMarque);
-                        $idMarqueNotif = $idNouveau;
-                        $notification = 'Ajouté';
-                        $tbMarques = $db->getLesMarques();
-                    }
-                } elseif ($action === 'demanderModifierMarque') {
-                    $idMarqueModif = (int)($_POST['txtIdMarque'] ?? -1);
-                } elseif ($action === 'validerModifierMarque') {
-                    $idMarque = (int)($_POST['txtIdMarque'] ?? -1);
-                    $nomMarque = $_POST['txtNomMarque'] ?? '';
-                    if ($idMarque > 0 && $nomMarque !== '') {
-                        $db->modifierMarque($idMarque, $nomMarque);
-                        $idMarqueNotif = $idMarque;
-                        $notification = 'Modifié';
-                        $idMarqueModif = -1;
-                        $tbMarques = $db->getLesMarques();
-                    }
-                } elseif ($action === 'annulerModifierMarque') {
-                    $idMarqueModif = -1;
-                } elseif ($action === 'supprimerMarque') {
-                    $idMarque = (int)($_POST['txtIdMarque'] ?? -1);
-                    if ($idMarque > 0) {
-                        $db->supprimerMarque($idMarque);
-                        $idMarqueNotif = $idMarque;
-                        $notification = 'Supprimé';
-                        $tbMarques = $db->getLesMarques();
-                    }
-                }
-            }
-            
-            echo $twig->render('lesMarques.html.twig', [
-                'menuActif' => 'Jeux',
-                'tbMarques' => $tbMarques,
-                'idMarqueModif' => $idMarqueModif,
-                'idMarqueNotif' => $idMarqueNotif,
-                'notification' => $notification
-            ]);
-        } catch (Throwable $e) {
-            echo '<div class="erreur">Erreur marques: ' . htmlspecialchars($e->getMessage()) . '</div>';
-        }
-    }
-    break;
+    // Redirection vers la route Symfony
+    header('Location: /marques');
+    exit;
 }
 case 'gererPegis' :
 {
-    $cPeg = __DIR__ . '/controleur/c_gererPegis.php';
-    if (file_exists($cPeg)) {
-        require $cPeg;
-    } else {
-        try {
-            $tbPegis = $db->getLesPegis();
-            $idPegiModif = -1; $idPegiNotif = -1; $notification = 'rien';
-            
-            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-                $action = $_POST['cmdAction'] ?? '';
-                if ($action === 'ajouterNouveauPegi') {
-                    $age = $_POST['txtAge'] ?? '';
-                    $description = $_POST['txtDescription'] ?? '';
-                    if ($age !== '' && $description !== '') {
-                        $idNouveau = $db->ajouterPegi($age, $description);
-                        $idPegiNotif = $idNouveau;
-                        $notification = 'Ajouté';
-                        $tbPegis = $db->getLesPegis();
-                    }
-                } elseif ($action === 'demanderModifierPegi') {
-                    $idPegiModif = (int)($_POST['txtIdPegi'] ?? -1);
-                } elseif ($action === 'validerModifierPegi') {
-                    $idPegi = (int)($_POST['txtIdPegi'] ?? -1);
-                    $age = $_POST['txtAge'] ?? '';
-                    $description = $_POST['txtDescription'] ?? '';
-                    if ($idPegi > 0 && $age !== '' && $description !== '') {
-                        $db->modifierPegi($idPegi, $age, $description);
-                        $idPegiNotif = $idPegi;
-                        $notification = 'Modifié';
-                        $idPegiModif = -1;
-                        $tbPegis = $db->getLesPegis();
-                    }
-                } elseif ($action === 'annulerModifierPegi') {
-                    $idPegiModif = -1;
-                } elseif ($action === 'supprimerPegi') {
-                    $idPegi = (int)($_POST['txtIdPegi'] ?? -1);
-                    if ($idPegi > 0) {
-                        $db->supprimerPegis($idPegi);
-                        $idPegiNotif = $idPegi;
-                        $notification = 'Supprimé';
-                        $tbPegis = $db->getLesPegis();
-                    }
-                }
-            }
-            
-            echo $twig->render('lesPegis.html.twig', [
-                'menuActif' => 'Jeux',
-                'tbPegis' => $tbPegis,
-                'idPegiModif' => $idPegiModif,
-                'idPegiNotif' => $idPegiNotif,
-                'notification' => $notification
-            ]);
-        } catch (Throwable $e) {
-            echo '<div class="erreur">Erreur pegis: ' . htmlspecialchars($e->getMessage()) . '</div>';
-        }
-    }
-    break;
+    // Redirection vers la route Symfony
+    header('Location: /pegis');
+    exit;
 }
 case 'gererJeux' :
 {
-    $cJeux = __DIR__ . '/controleur/c_gererJeux.php';
-    if (file_exists($cJeux)) {
-        require $cJeux;
-    } else {
-        try {
-            $tbJeux = $db->getLesJeux();
-            $tbGenres = $db->getLesGenres();
-            $tbMarques = $db->getLesMarques();
-            $tbPlateformes = $db->getLesPlateformes();
-            $tbPegis = $db->getLesPegis();
-            $notification = 'rien'; $refJeuModif = null; $refJeuNotif = null;
-            
-            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
-                $action = $_POST['cmdAction'] ?? '';
-                if ($action === 'ajouterNouveauJeu') {
-                    $refJeu = $_POST['refJeu'] ?? '';
-                    $nom = $_POST['nom'] ?? '';
-                    $prix = (float)($_POST['prix'] ?? 0);
-                    $dateParution = $_POST['dateParution'] ?? '';
-                    $idGenre = (int)($_POST['idGenre'] ?? 0);
-                    $idMarque = (int)($_POST['idMarque'] ?? 0);
-                    $idPlateforme = (int)($_POST['idPlateforme'] ?? 0);
-                    $idPegi = (int)($_POST['idPegi'] ?? 0);
-                    if ($refJeu !== '' && $nom !== '' && $dateParution !== '') {
-                        $db->ajouterJeu($refJeu, $nom, $prix, $dateParution, $idGenre, $idMarque, $idPlateforme, $idPegi);
-                        $refJeuNotif = $refJeu;
-                        $notification = 'Ajouté';
-                        $tbJeux = $db->getLesJeux();
-                    }
-                } elseif ($action === 'demanderModifierJeu') {
-                    $refJeuModif = $_POST['refJeu'] ?? null;
-                } elseif ($action === 'validerModifierJeu') {
-                    $refJeu = $_POST['refJeu'] ?? '';
-                    $nom = $_POST['nom'] ?? '';
-                    $prix = (float)($_POST['prix'] ?? 0);
-                    $dateParution = $_POST['dateParution'] ?? '';
-                    $idGenre = (int)($_POST['idGenre'] ?? 0);
-                    $idMarque = (int)($_POST['idMarque'] ?? 0);
-                    $idPlateforme = (int)($_POST['idPlateforme'] ?? 0);
-                    $idPegi = (int)($_POST['idPegi'] ?? 0);
-                    if ($refJeu !== '' && $nom !== '' && $dateParution !== '') {
-                        $db->modifierJeu($refJeu, $nom, $prix, $dateParution, $idGenre, $idMarque, $idPlateforme, $idPegi);
-                        $refJeuNotif = $refJeu;
-                        $notification = 'Modifié';
-                        $refJeuModif = null;
-                        $tbJeux = $db->getLesJeux();
-                    }
-                } elseif ($action === 'annulerModifierJeu') {
-                    $refJeuModif = null;
-                } elseif ($action === 'supprimerJeu') {
-                    $refJeu = $_POST['refJeu'] ?? '';
-                    if ($refJeu !== '') {
-                        $db->supprimerJeu($refJeu);
-                        $refJeuNotif = $refJeu;
-                        $notification = 'Supprimé';
-                        $tbJeux = $db->getLesJeux();
-                    }
-                }
-            }
-            
-            echo $twig->render('lesJeux.html.twig', [
-                'menuActif' => 'Jeux',
-                'tbJeux' => $tbJeux,
-                'tbGenres' => $tbGenres,
-                'tbMarques' => $tbMarques,
-                'tbPlateformes' => $tbPlateformes,
-                'tbPegis' => $tbPegis,
-                'notification' => $notification,
-                'refJeuModif' => $refJeuModif,
-                'refJeuNotif' => $refJeuNotif
-            ]);
-        } catch (Throwable $e) {
-            echo '<div class="erreur">Erreur jeux: ' . htmlspecialchars($e->getMessage()) . '</div>';
-		}
-	}
-break;
+    // Redirection vers la route Symfony
+    header('Location: /jeux');
+    exit;
 }
 // ATTENTION, conserver les autres case dans votre code
 case 'deconnexion' :

@@ -1,12 +1,12 @@
 <?php
 /**
- * Contrôleur de gestion des genres de jeux
+ * Contrôleur de gestion des PEGI (classifications de jeux)
  * 
- * Ce contrôleur gère toutes les opérations CRUD sur les genres :
- * - Affichage de la liste des genres
- * - Ajout d'un nouveau genre
- * - Modification d'un genre existant
- * - Suppression d'un genre
+ * Ce contrôleur gère toutes les opérations CRUD sur les PEGI :
+ * - Affichage de la liste des PEGI
+ * - Ajout d'un nouveau PEGI
+ * - Modification d'un PEGI existant
+ * - Suppression d'un PEGI
  * 
  * @package App\Controller
  * @author Original
@@ -24,25 +24,25 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use PdoJeux;
 
-class GenresController extends AbstractController
+class PegisController extends AbstractController
 {
     /**
-     * Méthode privée pour afficher la liste des genres
+     * Méthode privée pour afficher la liste des PEGI
      * 
-     * Cette méthode centralise l'affichage de la liste des genres
+     * Cette méthode centralise l'affichage de la liste des PEGI
      * et est utilisée par toutes les actions du contrôleur
      * 
      * @param PdoJeux $db Instance de la connexion à la base de données
-     * @param int $idGenreModif ID du genre en cours de modification (-1 si aucun)
-     * @param int $idGenreNotif ID du genre concerné par une notification (-1 si aucun)
+     * @param int $idPegiModif ID du PEGI en cours de modification (-1 si aucun)
+     * @param int $idPegiNotif ID du PEGI concerné par une notification (-1 si aucun)
      * @param string $notification Type de notification à afficher ('rien', 'Ajouté', 'Modifié', 'Supprimé')
+     * @param SessionInterface|null $session Session Symfony
      * @return Response Vue Twig avec les données nécessaires
      */
-    private function afficherGenres(PdoJeux $db, int $idGenreModif, int $idGenreNotif, string $notification, ?SessionInterface $session = null)
+    private function afficherPegis(PdoJeux $db, int $idPegiModif, int $idPegiNotif, string $notification, ?SessionInterface $session = null)
     {
         // Récupération des données nécessaires
-        $tbMembres = $db->getLesMembres();
-        $tbGenres = $db->getLesGenresComplet();
+        $tbPegis = $db->getLesPegis();
 
         // Préparation des données de session pour le template
         $sessionData = [];
@@ -61,77 +61,76 @@ class GenresController extends AbstractController
         }
 
         // Rendu de la vue avec toutes les données
-        return $this->render('lesGenres.html.twig', array(
+        return $this->render('lesPegis.html.twig', array(
             'menuActif' => 'Jeux',
-            'tbGenres' => $tbGenres,
-            'tbMembres' => $tbMembres,
-            'idGenreModif' => $idGenreModif,
-            'idGenreNotif' => $idGenreNotif,
+            'tbPegis' => $tbPegis,
+            'idPegiModif' => $idPegiModif,
+            'idPegiNotif' => $idPegiNotif,
             'notification' => $notification,
             'session' => $sessionData
         ));
     }
 
     /**
-     * Affiche la liste des genres
+     * Affiche la liste des PEGI
      * 
-     * @Route("/genres", name="genres_afficher")
+     * @Route("/pegis", name="pegis_afficher")
      * @param SessionInterface $session Pour vérifier l'authentification
-     * @return Response Liste des genres ou page de connexion
+     * @return Response Liste des PEGI ou page de connexion
      */
-    #[Route('/genres', name: 'genres_afficher')]
+    #[Route('/pegis', name: 'pegis_afficher')]
     public function index(SessionInterface $session)
     {
         // Vérification de l'authentification (utilise la session PHP native ou Symfony)
         if (isset($_SESSION['idUtilisateur']) || $session->has('idUtilisateur')) {
             $db = PdoJeux::getPdoJeux();
-            return $this->afficherGenres($db, -1, -1, 'rien', $session);
+            return $this->afficherPegis($db, -1, -1, 'rien', $session);
         } else {
             return $this->render('connexion.html.twig');
         }
     }
 
     /**
-     * Ajoute un nouveau genre
+     * Ajoute un nouveau PEGI
      * 
-     * @Route("/genres/ajouter", name="genres_ajouter")
+     * @Route("/pegis/ajouter", name="pegis_ajouter")
      * @param SessionInterface $session Pour vérifier l'authentification
      * @param Request $request Données du formulaire
-     * @return Response Vue mise à jour avec le nouveau genre
+     * @return Response Vue mise à jour avec le nouveau PEGI
      */
-    #[Route('/genres/ajouter', name: 'genres_ajouter')]
+    #[Route('/pegis/ajouter', name: 'pegis_ajouter')]
     public function ajouter(SessionInterface $session, Request $request)
     {
         $db = PdoJeux::getPdoJeux();
-        $idGenreNotif = -1;
+        $idPegiNotif = -1;
         $notification = 'rien';
 
         // Vérification et traitement du formulaire
-        if (!empty($request->request->get('txtLibGenre'))) {
-            $libGenre = $request->request->get('txtLibGenre');
-            $idSpecialiste = !empty($request->request->get('lstMembre')) ? (int)$request->request->get('lstMembre') : null;
-            $idGenreNotif = $db->ajouterGenre($libGenre, $idSpecialiste);
+        if (!empty($request->request->get('txtAge')) && !empty($request->request->get('txtDescription'))) {
+            $age = $request->request->get('txtAge');
+            $description = $request->request->get('txtDescription');
+            $idPegiNotif = $db->ajouterPegi($age, $description);
             $notification = 'Ajouté';
         }
 
-        return $this->afficherGenres($db, -1, $idGenreNotif, $notification, $session);
+        return $this->afficherPegis($db, -1, $idPegiNotif, $notification, $session);
     }
 
     /**
-     * Prépare la modification d'un genre
+     * Prépare la modification d'un PEGI
      * 
-     * @Route("/genres/demandermodifier", name="genres_demandermodifier")
+     * @Route("/pegis/demandermodifier", name="pegis_demandermodifier")
      * @param SessionInterface $session Pour vérifier l'authentification
      * @param Request $request Données du formulaire
      * @return Response Vue avec le formulaire de modification
      */
-    #[Route('/genres/demandermodifier', name: 'genres_demandermodifier')]
+    #[Route('/pegis/demandermodifier', name: 'pegis_demandermodifier')]
     public function demanderModifier(SessionInterface $session, Request $request)
     {
         $db = PdoJeux::getPdoJeux();
-        return $this->afficherGenres(
+        return $this->afficherPegis(
             $db,
-            (int)$request->request->get('txtIdGenre'),
+            (int)$request->request->get('txtIdPegi'),
             -1,
             'rien',
             $session
@@ -139,47 +138,47 @@ class GenresController extends AbstractController
     }
 
     /**
-     * Valide la modification d'un genre
+     * Valide la modification d'un PEGI
      * 
-     * @Route("/genres/validermodifier", name="genres_validermodifier")
+     * @Route("/pegis/validermodifier", name="pegis_validermodifier")
      * @param SessionInterface $session Pour vérifier l'authentification
      * @param Request $request Données du formulaire
      * @return Response Vue mise à jour avec les modifications
      */
-    #[Route('/genres/validermodifier', name: 'genres_validermodifier')]
+    #[Route('/pegis/validermodifier', name: 'pegis_validermodifier')]
     public function validerModifier(SessionInterface $session, Request $request)
     {
         $db = PdoJeux::getPdoJeux();
-        $idGenre = (int)$request->request->get('txtIdGenre');
+        $idPegi = (int)$request->request->get('txtIdPegi');
         
-        // Mise à jour du genre dans la base de données
-        $libGenre = (string)$request->request->get('txtLibGenre');
-        $idSpecialiste = !empty($request->request->get('lstMembre')) ? (int)$request->request->get('lstMembre') : null;
-        $db->modifierGenre($idGenre, $libGenre, $idSpecialiste);
+        // Mise à jour du PEGI dans la base de données
+        $age = (string)$request->request->get('txtAge');
+        $description = (string)$request->request->get('txtDescription');
+        $db->modifierPegi($idPegi, $age, $description);
 
-        return $this->afficherGenres($db, -1, $idGenre, 'Modifié', $session);
+        return $this->afficherPegis($db, -1, $idPegi, 'Modifié', $session);
     }
 
     /**
-     * Supprime un genre
+     * Supprime un PEGI
      * 
-     * @Route("/genres/supprimer", name="genres_supprimer")
+     * @Route("/pegis/supprimer", name="pegis_supprimer")
      * @param SessionInterface $session Pour vérifier l'authentification
      * @param Request $request Données du formulaire
-     * @return Response Vue mise à jour sans le genre supprimé
+     * @return Response Vue mise à jour sans le PEGI supprimé
      */
-    #[Route('/genres/supprimer', name: 'genres_supprimer')]
+    #[Route('/pegis/supprimer', name: 'pegis_supprimer')]
     public function supprimer(SessionInterface $session, Request $request)
     {
         $db = PdoJeux::getPdoJeux();
         
-        // Suppression du genre
-        $db->supprimerGenre((int)$request->request->get('txtIdGenre'));
+        // Suppression du PEGI
+        $db->supprimerPegis((int)$request->request->get('txtIdPegi'));
         
         // Message de confirmation
-        $this->addFlash('success', 'Le genre a été supprimé');
+        $this->addFlash('success', 'Le PEGI a été supprimé');
         
-        return $this->afficherGenres($db, -1, -1, 'rien', $session);
+        return $this->afficherPegis($db, -1, -1, 'rien', $session);
     }
 }
 
