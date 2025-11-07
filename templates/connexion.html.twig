@@ -1,0 +1,122 @@
+{# 
+ # Template de la page de connexion
+ #
+ # Affiche :
+ # - Formulaire de connexion
+ # - Gestion des erreurs de connexion
+ # - Fonction "mot de passe oublié"
+ # 
+ # Utilise :
+ # - Le hachage SHA512 côté client pour le mot de passe
+ # - Une fenêtre modale pour la réinitialisation du mot de passe
+ #}
+{% extends "base.html.twig" %}
+
+{% block central %}
+    {# Page de connexion #}
+    <div id="login-page">
+        <div class="container connexion">
+            {# Formulaire de connexion #}
+            <form class="form-login" method="post" action="index.php?uc=connexion&action=validerConnexion">
+                <h2 class="form-login-heading">Identification utilisateur</h2>
+                                <div class="login-wrap">
+                    {# Affichage des erreurs de connexion #}
+                    {% if (erreur is defined) and erreur %}
+                        <div class="erreurCnx">
+                            <p>{{ erreur }}</p>
+                        </div>
+                    {% endif %}
+
+                    {# Champ login #}
+                    <input type="text" 
+                           class="form-control" 
+                           name="txtLogin" 
+                           id="txtLogin" 
+                           placeholder="Login"
+                           required 
+                           autofocus />
+                    <br>
+
+                    {# Champ mot de passe #}
+                    <input type="password" 
+                           class="form-control" 
+                           name="txtMdp" 
+                           id="txtMdp" 
+                           placeholder="Mot de passe" 
+                           required />
+
+                    {# Lien "Mot de passe oublié" #}
+                    <div class="pull-right login-social-link">
+                        <a data-toggle="modal" href="#myModal">
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
+<!-- l'événement onclick contient du code javascript pour hacher le mot de passe avec la
+fonction de hachage SHA512
+le résultat est stocké dans le champ caché qui sera transmis au serveur
+document.getElementById('hdMdp').value : la valeur du champ caché hdMdp
+document.getElementById('txtMdp').value : la valeur du champ saisi txtMdp
+qui est mise à ' ' avant transmission au serveur pour ne pas
+envoyer le mdp en clair
+hex_sha512 : fonction javascript de hachage sha512 avec retour du résultat en
+hexadecimal
+-->
+                    {# Bouton de connexion #}
+                    <button class="btn btn-theme btn-block" 
+                            type="submit" 
+                            name="cmdAction"
+                            value="validerConnexion"
+                            title="Se connecte">
+                        <i class="fa fa-lock"></i> Se connecte
+                    </button>
+
+                    {# Champ caché pour le mot de passe haché #}
+                    <input type="hidden" name="hdMdp" id="hdMdp" />
+                    <hr>
+                </div>
+
+                {# Fenêtre modale pour la réinitialisation du mot de passe #}
+                <div aria-hidden="true" 
+                     aria-labelledby="myModalLabel" 
+                     role="dialog" 
+                     tabindex="-1"
+                     id="myModal" 
+                     class="modal fade">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            {# En-tête de la modale #}
+                            <div class="modal-header">
+                                <button type="button" 
+                                        class="close" 
+                                        data-dismiss="modal" 
+                                        aria-hidden="true">&times;</button>
+                                <h4 class="modal-title">Mot de passe oublié ?</h4>
+                            </div>
+
+                            {# Corps de la modale #}
+                            <div class="modal-body">
+                                <p>Entrez votre adresse mail pour réinitialiser votre mot de passe.</p>
+                                <input type="text" 
+                                       name="txtEmail" 
+                                       id="txtEmail" 
+                                       placeholder="Email"
+                                       autocomplete="off" 
+                                       class="form-control placeholder-no-fix" />
+                            </div>
+
+                            {# Pied de la modale #}
+                            <div class="modal-footer">
+                                <button data-dismiss="modal" 
+                                        class="btn btn-default" 
+                                        type="button">Annuler</button>
+                                <button class="btn btn-theme" 
+                                        type="button">Envoyer</button>
+                            </div>
+</div>
+</div>
+</div>
+<!-- modal -->
+</form>
+</div>
+</div>
+{% endblock %}

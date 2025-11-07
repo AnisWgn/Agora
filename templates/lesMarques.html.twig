@@ -1,0 +1,156 @@
+{# 
+ # Template de gestion des marques de jeux vidéo
+ #
+ # Fonctionnalités :
+ # - Affichage de la liste des marques
+ # - Ajout d'une nouvelle marque
+ # - Modification d'une marque existante
+ # - Suppression d'une marque
+ #}
+{% extends "base.html.twig" %}
+
+{% block central %}
+    {# Section principale de gestion des marques #}
+    <div class="col-sm-6">
+        <section class="panel">
+            {# En-tête du panneau #}
+            <div class="chat-room-head">
+                <h3><i class="fa fa-angle-right"></i> Gérer les marques</h3>
+            </div>
+
+            {# Corps du panneau #}
+            <div class="panel-body">
+                {# Tableau des marques #}
+                <table class="table table-striped table-advance table-hover">
+                    <thead>
+                        <tr class="tableau-entete">
+                            <th><i class="fa fa-bullhorn"></i> Identifiant</th>
+                            <th><i class="fa fa-bookmark"></i> Nom</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Formulaire d'ajout d'une nouvelle marque #}
+                        <tr>
+                            <form action="index.php?uc=gererMarques" method="post">
+                                {# Cellule d'identifiant (nouveau) #}
+                                <td>Nouveau</td>
+
+                                {# Champ de saisie du nom de la marque #}
+                                <td>
+                                    <input type="text" 
+                                           id="txtNomMarque" 
+                                           name="txtNomMarque" 
+                                           size="24" 
+                                           required 
+                                           minlength="2" 
+                                           maxlength="24" 
+                                           placeholder="Nom de la marque" 
+                                           title="De 2 à 24 caractères" />
+                                </td>
+
+                                {# Boutons d'action pour l'ajout #}
+                                <td> 
+                                    <button class="btn btn-primary btn-xs" 
+                                            type="submit" 
+                                            name="cmdAction" 
+                                            value="ajouterNouvelleMarque" 
+                                            title="Enregistrer nouvelle marque">
+                                        <i class="fa fa-save"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-xs" 
+                                            type="reset" 
+                                            title="Effacer la saisie">
+                                        <i class="fa fa-eraser"></i>
+                                    </button> 
+                                </td>
+                            </form>
+                        </tr>
+                        {# Boucle d'affichage des marques existantes #}
+                        {% for marque in tbMarques %}
+                            <tr>
+                                <form action="index.php?uc=gererMarques" method="post" style="display: contents;">
+                                    {# ID de la marque (champ caché) #}
+                                    <input type="hidden" 
+                                           name="txtIdMarque" 
+                                           value="{{ marque.identifiant }}" />
+
+                                    {# Affichage de l'identifiant #}
+                                    <td>{{ marque.identifiant }}</td>
+
+                                    <td>
+                                        {# Mode affichage normal #}
+                                        {% if marque.identifiant != idMarqueModif %}
+                                            {{ marque.libelle }}
+                                            </td>
+                                            <td>
+                                                {# Affichage de la notification si présente #}
+                                                {% if notification != 'rien' and marque.identifiant == idMarqueNotif %}
+                                                    <button class="btn btn-success btn-xs">
+                                                        <i class="fa fa-check"></i> {{ notification }}
+                                                    </button>
+                                                {% endif %}
+
+                                                {# Boutons d'action en mode affichage #}
+                                                <button class="btn btn-primary btn-xs" 
+                                                        type="submit" 
+                                                        name="cmdAction" 
+                                                        value="demanderModifierMarque" 
+                                                        title="Modifier">
+                                                    <i class="fa fa-pencil"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-xs" 
+                                                        type="submit" 
+                                                        name="cmdAction" 
+                                                        value="supprimerMarque" 
+                                                        title="Supprimer" 
+                                                        onclick="return confirm('Voulez-vous vraiment supprimer cette marque ?');">
+                                                    <i class="fa fa-trash-o"></i>
+                                                </button>
+                                            </td>
+                                        {# Mode édition #}
+                                        {% else %}
+                                            {# Champ de modification du nom #}
+                                            <input type="text" 
+                                                   id="txtNomMarque" 
+                                                   name="txtNomMarque" 
+                                                   size="24" 
+                                                   required 
+                                                   minlength="2" 
+                                                   maxlength="24" 
+                                                   value="{{ marque.libelle }}" />     
+                                            </td>
+                                            <td>
+                                                {# Boutons d'action en mode édition #}
+                                                <button class="btn btn-primary btn-xs" 
+                                                        type="submit" 
+                                                        name="cmdAction" 
+                                                        value="validerModifierMarque" 
+                                                        title="Enregistrer">
+                                                    <i class="fa fa-save"></i>
+                                                </button>
+                                                <button class="btn btn-info btn-xs" 
+                                                        type="reset" 
+                                                        title="Effacer la saisie">
+                                                    <i class="fa fa-eraser"></i>
+                                                </button>              
+                                                <button class="btn btn-warning btn-xs" 
+                                                        type="submit" 
+                                                        name="cmdAction" 
+                                                        value="annulerModifierMarque" 
+                                                        title="Annuler">
+                                                    <i class="fa fa-undo"></i>
+                                                </button>
+                                            </td>              
+                                        {% endif %}
+                                </form>
+                            </tr>  
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>{# Fin du corps du panneau #}
+        </section>{# Fin de la section des marques #}
+    </div>{# Fin de la colonne #}
+{% endblock %}
+
+

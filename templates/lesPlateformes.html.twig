@@ -1,0 +1,159 @@
+{# 
+ # Template de gestion des plateformes de jeux
+ #
+ # Fonctionnalités :
+ # - Affichage de la liste des plateformes (consoles, PC, etc.)
+ # - Ajout d'une nouvelle plateforme
+ # - Modification d'une plateforme existante
+ # - Suppression d'une plateforme
+ #
+ # Les plateformes représentent les différents supports
+ # sur lesquels les jeux peuvent être joués
+ #}
+
+{% extends "base.html.twig" %}
+
+{% block central %}
+    {# Section principale de gestion des plateformes #}
+    <div class="col-sm-6">
+        <section class="panel">
+            {# En-tête du panneau #}
+            <div class="chat-room-head">
+                <h3><i class="fa fa-angle-right"></i> Gérer les plateformes</h3>
+            </div>
+
+            {# Corps du panneau #}
+            <div class="panel-body">
+                {# Tableau des plateformes #}
+                <table class="table table-striped table-advance table-hover">
+                    <thead>
+                        <tr class="tableau-entete">
+                            <th><i class="fa fa-bullhorn"></i> Identifiant</th>
+                            <th><i class="fa fa-bookmark"></i> Libellé</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# Formulaire d'ajout d'une nouvelle plateforme #}
+                        <tr>
+                            <form action="index.php?uc=gererPlateformes" method="post">
+                                {# Cellule d'identifiant (nouveau) #}
+                                <td>Nouveau</td>
+
+                                {# Champ de saisie du libellé #}
+                                <td>
+                                    <input type="text" 
+                                           id="txtLibPlateforme" 
+                                           name="txtLibPlateforme" 
+                                           size="24" 
+                                           required 
+                                           minlength="2" 
+                                           maxlength="24" 
+                                           placeholder="Libellé" 
+                                           title="De 2 à 24 caractères" />
+                                </td>
+
+                                {# Boutons d'action pour l'ajout #}
+                                <td> 
+                                    <button class="btn btn-primary btn-xs" 
+                                            type="submit" 
+                                            name="cmdAction" 
+                                            value="ajouterNouvellePlateforme" 
+                                            title="Enregistrer nouvelle plateforme">
+                                        <i class="fa fa-save"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-xs" 
+                                            type="reset" 
+                                            title="Effacer la saisie">
+                                        <i class="fa fa-eraser"></i>
+                                    </button>
+                                </td>
+                            </form>
+                        </tr>
+                        {# Boucle d'affichage des plateformes existantes #}
+                        {% for plateforme in tbPlateformes %}
+                            <tr>
+                                <form action="index.php?uc=gererPlateformes" method="post" style="display: contents;">
+                                    {# ID de la plateforme (champ caché) #}
+                                    <input type="hidden" 
+                                           name="txtIdPlateforme" 
+                                           value="{{ plateforme.identifiant }}" />
+
+                                    {# Affichage de l'identifiant #}
+                                    <td>{{ plateforme.identifiant }}</td>
+
+                                    {# Mode affichage normal ou édition #}
+                                    {% if plateforme.identifiant != idPlateformeModif %}
+                                        {# Mode affichage normal #}
+                                        <td>{{ plateforme.libelle }}</td>
+                                        <td>
+                                            {# Affichage de la notification si présente #}
+                                            {% if notification != 'rien' and plateforme.identifiant == idPlateformeNotif %}
+                                                <button class="btn btn-success btn-xs">
+                                                    <i class="fa fa-check"></i> {{ notification }}
+                                                </button>
+                                            {% endif %}
+
+                                            {# Boutons d'action en mode affichage #}
+                                            <button class="btn btn-primary btn-xs" 
+                                                    type="submit" 
+                                                    name="cmdAction" 
+                                                    value="demanderModifierPlateforme" 
+                                                    title="Modifier">
+                                                <i class="fa fa-pencil"></i>
+                                            </button>
+                                            <button class="btn btn-danger btn-xs" 
+                                                    type="submit" 
+                                                    name="cmdAction" 
+                                                    value="supprimerPlateforme" 
+                                                    title="Supprimer" 
+                                                    onclick="return confirm('Voulez-vous vraiment supprimer cette plateforme ?');">
+                                                <i class="fa fa-trash-o"></i>
+                                            </button>
+                                        </td>
+                                    {% else %}
+                                        {# Mode édition #}
+                                        <td>
+                                            <input type="text" 
+                                                   id="txtLibPlateforme" 
+                                                   name="txtLibPlateforme" 
+                                                   size="24" 
+                                                   required 
+                                                   minlength="2" 
+                                                   maxlength="24" 
+                                                   value="{{ plateforme.libelle }}" />     
+                                        </td>
+                                        <td>
+                                            {# Boutons d'action en mode édition #}
+                                            <button class="btn btn-primary btn-xs" 
+                                                    type="submit" 
+                                                    name="cmdAction" 
+                                                    value="validerModifierPlateforme" 
+                                                    title="Enregistrer">
+                                                <i class="fa fa-save"></i>
+                                            </button>
+                                            <button class="btn btn-info btn-xs" 
+                                                    type="reset" 
+                                                    title="Effacer la saisie">
+                                                <i class="fa fa-eraser"></i>
+                                            </button>                
+                                            <button class="btn btn-warning btn-xs" 
+                                                    type="submit" 
+                                                    name="cmdAction" 
+                                                    value="annulerModifierPlateforme" 
+                                                    title="Annuler">
+                                                <i class="fa fa-undo"></i>
+                                            </button>
+                                        </td>
+                                    {% endif %}
+                                </form>
+                            </tr>  
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>{# Fin du corps du panneau #}
+        </section>{# Fin de la section des plateformes #}
+    </div>{# Fin de la colonne #}
+{% endblock %}
+
+
