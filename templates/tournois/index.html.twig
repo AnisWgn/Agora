@@ -1,18 +1,59 @@
+{# 
+  Template de la page de gestion des tournois
+  
+  Ce template affiche :
+  - Le titre de la section de gestion des tournois
+  - Les informations de développement (controller et vue)
+  - La structure de la page avec le panel Bootstrap
+  
+  Variables disponibles :
+  - controller_name : Nom du contrôleur (pour debug)
+  - menuActif : Élément de menu actif
+  - session : Données de session de l'utilisateur connecté
+#}
 {% extends 'base.html.twig' %}
 
 {% block central %}
-<div class="col-sm-8">
-    <section class="panel">
-        <div class="chat-room-head">
-            <h3><i class="fa fa-angle-right"></i> Gérer les tournois</h3>
-        </div>
-        <div class="panel-body">
-    <h1>Bonjour {{ controller_name }}! ✅</h1>
-    <ul>
-        <li>Le controller est ici <code>C:/laragon/www/Agora/src/Controller/TournoisController.php</code></li>
-        <li>La vue est ici <code>C:/laragon/www/Agora/templates/tournois/index.html.twig</code></li>
-    </ul>
+    {# ==================================== #}
+    {# ===== CONTENEUR PRINCIPAL ===== #}
+    {# ==================================== #}
+    
+    <div class="col-sm-8">
+        {# Section panel Bootstrap pour la gestion des tournois #}
+        <section class="panel">
+            {# ==================================== #}
+            {# ===== EN-TÊTE DE LA SECTION ===== #}
+            {# ==================================== #}
+            
+            <div class="chat-room-head">
+                <h3>
+                    <i class="fa fa-angle-right"></i> 
+                    Gérer les tournois
+                </h3>
+            </div>
+            
+            {# ==================================== #}
+            {# ===== CORPS DE LA SECTION ===== #}
+            {# ==================================== #}
+            
+            <div class="panel-body">
+                {# Message de bienvenue avec le nom du contrôleur #}
+                <h1>
+                    Bonjour {{ controller_name }}! ✅
+                </h1>
+                
+                {# Liste des informations de développement #}
+                <ul>
+                    <li>
+                        Le controller est ici 
+                        <code>C:/laragon/www/Agora/src/Controller/TournoisController.php</code>
+                    </li>
+                    <li>
+                        La vue est ici 
+                        <code>C:/laragon/www/Agora/templates/tournois/index.html.twig</code>
+                    </li>
+                </ul>
+            </div>
+        </section>
     </div>
-    </section>
-</div>
 {% endblock %}
