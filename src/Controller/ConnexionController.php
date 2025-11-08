@@ -25,6 +25,18 @@ use PdoJeux;
 class ConnexionController extends AbstractController
 {
     /**
+     * Affichage de la page de connexion
+     * 
+     * @Route("/connexion", name="connexion")
+     * @return Response Page de connexion
+     */
+    #[Route('/connexion', name: 'connexion')]
+    public function connexion()
+    {
+        return $this->render('connexion.html.twig');
+    }
+
+    /**
      * Validation des informations de connexion
      * 
      * @Route("/connexion/valider", name="connexion_valider")
@@ -32,13 +44,18 @@ class ConnexionController extends AbstractController
      * @param Request $request Données de la requête
      * @return Response Redirection selon le résultat de la connexion
      */
-    #[Route('/connexion/valider', name: 'connexion_valider')]
+    #[Route('/connexion/valider', name: 'connexion_valider', methods: ['POST'])]
     public function validerConnexion(SessionInterface $session, Request $request)
     {
+        // Vérifier que c'est une requête POST
+        if (!$request->isMethod('POST')) {
+            return $this->redirectToRoute('connexion');
+        }
+        
         // Récupération des données du formulaire
-        $login = (string) $request->request->get('txtLogin');
-        $mdpSaisi = (string) $request->request->get('txtMdp');
-        $mdpHacheClient = (string) $request->request->get('hdMdp');
+        $login = (string) $request->request->get('txtLogin', '');
+        $mdpSaisi = (string) $request->request->get('txtMdp', '');
+        $mdpHacheClient = (string) $request->request->get('hdMdp', '');
 
         // Hachage du mot de passe si non fait côté client
         $mdpPourVerif = $mdpHacheClient !== '' ? $mdpHacheClient : hash('sha512', $mdpSaisi);
@@ -54,18 +71,24 @@ try {
         $this->addFlash(
             'danger', 'Login ou mot de passe incorrect !'
         );
-        return $this->render('connexion.html.twig');
+        return $this->redirectToRoute('connexion');
     } else {
         // créer trois variables de session pour id utilisateur, nom et prénom
         $session->set('idUtilisateur', $utilisateur->idMembre);
         $session->set('nomUtilisateur', $utilisateur->nomMembre);
         $session->set('prenomUtilisateur', $utilisateur->prenomMembre);
+        
+        // Synchroniser avec la session PHP native pour compatibilité
+        $_SESSION['idUtilisateur'] = $utilisateur->idMembre;
+        $_SESSION['nomUtilisateur'] = $utilisateur->nomMembre;
+        $_SESSION['prenomUtilisateur'] = $utilisateur->prenomMembre;
+        
         // redirection du navigateur vers la page d'accueil
         return $this->redirectToRoute('accueil');
     }
 } catch (\Exception $e) {
     $this->addFlash('danger', 'Erreur de connexion à la base de données : ' . $e->getMessage());
-    return $this->render('connexion.html.twig');
+    return $this->redirectToRoute('connexion');
 }
 }
     /**
@@ -80,9 +103,13 @@ try {
     #[Route('/deconnexion', name: 'deconnexion')]
     public function deconnexion(SessionInterface $session)
     {
-        // Nettoyage complet de la session
+        // Nettoyage complet de la session Symfony
         $session->clear();
         $session->invalidate();
+        
+        // Nettoyage de la session PHP native pour compatibilité
+        session_unset();
+        session_destroy();
 
         // Redirection vers la page d'accueil
         return $this->redirectToRoute('accueil');

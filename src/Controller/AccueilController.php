@@ -37,7 +37,7 @@ class AccueilController extends AbstractController
             return $this->render('accueil.html.twig');
         } else {
             // Utilisateur non connecté : redirection vers la page de connexion
-            return $this->render('connexion.html.twig');
+            return $this->redirectToRoute('connexion');
         }
     }
 }
