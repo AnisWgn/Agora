@@ -40,7 +40,7 @@
                 <ul class="sub">
                     {# Gestion des jeux #}
                     <li>
-                        <a href="index.php?uc=gererJeux&action=afficherJeux">Jeux</a>
+                        <a href="{{ path('jeux_afficher') }}">Jeux</a>
                     </li>
                     {# Gestion des genres #}
                     <li>
@@ -48,19 +48,19 @@
                     </li>
                     {# Gestion des plateformes #}
                     <li>
-                        <a href="index.php?uc=gererPlateformes&action=afficherPlateformes">Plateformes</a>
+                        <a href="{{ path('plateformes_afficher') }}">Plateformes</a>
                     </li>
                     {# Gestion des marques #}
                     <li>
-                        <a href="index.php?uc=gererMarques&action=afficherMarques">Marques</a>
+                        <a href="{{ path('marques_afficher') }}">Marques</a>
                     </li>
                     {# Gestion des classifications PEGI #}
                     <li>
-                        <a href="index.php?uc=gererPegis&action=afficherPegis">Pegi</a>
+                        <a href="{{ path('pegis_afficher') }}">Pegi</a>
                     </li>
                     {# Gestion des tournois #}
                     <li>
-                        <a href="index.php?uc=gererTournois&action=afficherTournois">Tournois</a>
+                        <a href="{{ path('tournois_afficher') }}">Tournois</a>
                     </li>
                 </ul>
             </li>

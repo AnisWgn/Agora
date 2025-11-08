@@ -33,7 +33,7 @@
                     <tbody>
                         {# Formulaire d'ajout d'un nouveau genre #}
                         <tr>
-                            <form action="{{ path('genres_afficher') }}" method="post">
+                            <form action="index.php?uc=gererGenres" method="post">
                                 {# Identifiant du nouveau genre #}
                                 <td>Nouveau</td>
 
@@ -79,7 +79,7 @@
                         {# Liste des genres existants #}
                         {% for key, genre in tbGenres %}
                             <tr>
-                                <form action="{{ path('genres_afficher') }}" method="post" style="display: contents;">
+                                <form action="index.php?uc=gererGenres" method="post" style="display: contents;">
                                     {# ID du genre (caché) #}
                                     <input type="hidden" name="txtIdGenre" value="{{ genre.identifiant }}" />
                                     
