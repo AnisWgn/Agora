@@ -1,0 +1,169 @@
+{# 
+ # Template de base de l'application
+ #
+ # Ce template définit la structure commune à toutes les pages :
+ # - En-tête HTML avec métadonnées
+ # - Feuilles de style communes
+ # - Structure de navigation
+ # - Barre latérale (menu)
+ # - Zone de contenu principal
+ # - Pied de page
+ # 
+ # Blocs disponibles :
+ # - stylesheets : CSS additionnels
+ # - menu : Menu latéral (peut être désactivé)
+ # - central : Contenu principal de la page
+ # - body : Contenu alternatif (rarement utilisé)
+ #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {# Métadonnées de base #}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interface d'administration de la MJC Agora">
+    <meta name="author" content="sio">
+    <meta name="keyword" content="MJC, Agora">
+    <title>AgorA - Administration</title>
+    {% block stylesheets %}
+ <!-- Bootstrap core CSS -->
+ <link href="{{ asset('assets/lib/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet"/>
+ <!--external css-->
+ <link href="{{ asset('assets/lib/font-awesome/css/font-awesome.css') }}" rel="stylesheet" />
+ <link href="{{ asset('assets/lib/fullcalendar/bootstrap-fullcalendar.css') }}" rel="stylesheet" />
+ <!--external css pour les dates dans la gestion des tournois-->
+ <link rel="stylesheet" type="text/css" href="{{ asset('assets/lib/bootstrap-fileupload/bootstrap-fileupload.css') }}" />
+ <link rel="stylesheet" type="text/css" href="{{ asset('assets/lib/bootstrap-datepicker/css/datepicker.css') }}" />
+ <link rel="stylesheet" type="text/css" href="{{ asset('assets/lib/bootstrap-timepicker/compiled/timepicker.css') }}" />
+ <link rel="stylesheet" type="text/css" href="{{ asset('assets/lib/bootstrap-datetimepicker/css/datetimepicker.css') }}" />
+ <!-- Custom styles for this template -->
+ <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+ <link href="{{ asset('assets/css/style-responsive.css') }}" rel="stylesheet">
+ <!-- Style pour agora -->
+ <link href="{{ asset('assets/css/styleAgora.css') }}" rel="stylesheet">
+ {% endblock %}
+ <!-- =======================================================
+ Template Name: Dashio
+ Template URL: https://templatemag.com/dashio-bootstrap-admin-template/
+ Author: TemplateMag.com
+ License: https://templatemag.com/license/
+ ======================================================= -->
+ </head>
+<body>
+    <section id="container">
+        {# En-tête de l'application #}
+        <header class="header black-bg">
+            {# Bouton de basculement du menu latéral #}
+            <div class="sidebar-toggle-box">
+                <div class="fa fa-bars tooltips" 
+                     data-placement="right" 
+                     data-original-title="Toggle Navigation">
+                </div>
+            </div>
+
+            {# Logo et lien vers l'accueil #}
+            <a href="{{ path('accueil') }}" class="logo">
+                <b>Ago<span>rA</span></b>
+            </a>
+
+            {# Menu utilisateur en haut à droite #}
+                           <ul class="nav pull-right top-menu">
+                    {# Gestion de l'affichage selon l'état de connexion #}
+                    {% if app is defined and app.session is defined and app.session.has('idUtilisateur') %}
+                        {# Utilisateur connecté - Version Symfony #}
+                        <a href="" class="userAgo">
+                            {{ app.session.get('prenomUtilisateur') }} 
+                            {{ app.session.get('nomUtilisateur') }}
+                        </a>
+                        <li>
+                            <a class="logout" href="{{ path('deconnexion') }}">
+                                Se déconnecter
+                            </a>
+                        </li>
+                    {% elseif session is defined and session.idUtilisateur is defined %}
+                        {# Utilisateur connecté - Version classique #}
+                        <a href="" class="userAgo">
+                            {{ session.prenomUtilisateur }} 
+                            {{ session.nomUtilisateur }}
+                        </a>
+                        <li>
+                            <a class="logout" href="index.php?uc=deconnexion">
+                                Se déconnecter
+                            </a>
+                        </li>
+                    {% else %}
+                        {# Utilisateur non connecté #}
+                        <li>
+                            <a class="logout" href="{{ path('accueil') }}">
+                                Se connecter
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+ </header>
+ <!--header end-->
+ 
+{% block menu %}
+{% set isLogged = (app is defined and app.session is defined and app.session.has('idUtilisateur')) or (session is defined and session.idUtilisateur is defined) %}
+{% if isLogged %}
+ {{ include('menu.html.twig') }}
+{% endif %}
+{% endblock %}
+ 
+{# Affichage des messages flash #}
+{{ include('messages.html.twig') }}
+
+        {# Zone de contenu principal #}
+        <section id="main-content">
+            <section class="wrapper">
+                <div class="container-fluid">
+                    {# Bloc pour le contenu principal des pages #}
+                    {% block central %}
+                    {% endblock %}
+
+                    {# Bloc alternatif pour le contenu (rarement utilisé) #}
+                    {% block body %}
+                    {% endblock %}
+                </div>
+            </section>
+        </section>
+
+        {# Pied de page #}
+        <footer class="site-footer">
+            <div class="text-center">
+                {# Informations de copyright #}
+                <p>
+                    Crée par Logma avec le template bootstrap Dashio :
+                    &copy; Copyrights <strong>Dashio</strong>. All Rights Reserved
+                </p>
+
+                {# Crédits du template #}
+                <div class="credits">
+                    Created with Dashio template by 
+                    <a href="https://templatemag.com/">TemplateMag</a>
+                </div>
+
+                {# Bouton retour en haut #}
+                <a href="#" class="go-top">
+                    <i class="fa fa-angle-up"></i>
+                </a>
+            </div>
+        </footer>
+ <!--footer end-->
+ </section>
+ <!-- js placed at the end of the document so the pages load faster -->
+ <script src="{{ asset('assets/lib/jquery/jquery.min.js') }}"></script>
+ <script src="{{ asset('assets/lib/bootstrap/js/bootstrap.min.js') }}"></script>
+ <script class="include" type="text/javascript" src="{{ asset('assets/lib/jquery.dcjqaccordion.2.7.js') }}"></script>
+ <script src="{{ asset('assets/lib/jquery.scrollTo.min.js') }}"></script>
+ <!--common script for all pages-->
+ <script src="{{ asset('assets/lib/common-scripts.js') }}"></script>
+ <!--script pour le calendrier-->
+ <script src="{{ asset('assets/lib/jquery-ui-1.9.2.custom.min.js') }}"></script>
+ <script src="{{ asset('assets/lib/fullcalendar/fullcalendar.min.js') }}"></script>
+ <script src="{{ asset('assets/lib/calendar-conf-events.js') }}"></script>
+ <!-- pour la connexion -->
+ <script src="{{ asset('assets/libAgora/sha512.js') }}"></script>
+</body>
+</html>
+

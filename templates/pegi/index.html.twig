@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="col-sm-8">
+    <section class="panel">
+        <div class="chat-room-head">
+            <h3><i class="fa fa-angle-right"></i> Gérer les catégories pegis</h3>
+        </div>
+        <div class="panel-body">
+    <table class="table" "table-striped table-advance table-hiver">
+        <thead>
+            <tr class="tableau-entete">
+                <th><i class="fa fa-bullhorn"></id>Id</th>
+                <th><i class="fa fa-bookmark"></i>AgeLimite</th>
+                <th><i class="fa fa-bookmark"></i>DescPegi</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pegi in pegis %}
+            <tr>
+                <td>{{ pegi.id }}</td>
+                <td>{{ pegi.ageLimite }}</td>
+                <td>{{ pegi.descPegi }}</td>
+                <td>
+                    <a href="{{ path('app_pegi_show', {'id': pegi.id}) }}"><button class="btn btn-primary btn-xs"><i class="fa fa-tasks"></i></button></a>
+                    <a href="{{ path('app_pegi_edit', {'id': pegi.id}) }}"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">aucun pegi enregistré en base de données</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_pegi_new') }}"><button class="btn btn-primary btn-xs"><i class="fa fa-plus"></i></button></a>
+    </div>
+</section>
+</div>
+{% endblock %}

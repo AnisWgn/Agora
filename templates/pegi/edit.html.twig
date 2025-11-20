@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+<div class="col-sm-8">
+    <section class="panel">
+        <div class="chat-room-head">
+            <h3><i class="fa fa-angle-right"></i>Editer un genre</h3>
+        </div>
+        <div class="panel-body">
+
+    {{ include('pegi/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_pegi_index') }}"><button class="btn btn-primary btn-xs"><i class="fa fa-share"></i></button></a>
+
+    {{ include('pegi/_delete_form.html.twig') }}
+        </div>
+    <!-- fin du div panel-body-->
+    </section>
+    <!-- fin section genre-->
+    </div>
+    <!-- fin div col-sm-8-->
+{% endblock %}

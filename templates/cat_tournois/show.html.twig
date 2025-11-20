@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CatTournois{% endblock %}
+
+{% block body %}
+<div class="col-sm-8">
+    <section class="panel">
+        <div class="chat-room-head">
+            <h3><i class="fa fa-angle-right"></i> Créer un genre</h3>
+        </div>
+        <div class="panel-body">
+
+    <table class="table" "table-striped table-advance table-hover">
+        <tbody>
+            <tr>
+                <th class="tableau-entete"><i class="fa fa-bullhorn"></i> Identifier</th>
+                <td>{{ cat_tournoi.id }}</td>
+            </tr>
+            <tr>
+                <th class="tableau-entete"><i class="fa fa-bookmark"></i> Libellé</th>
+                <td>{{ cat_tournoi.libelle }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_cat_tournois_index') }}"><button class="btn btn-primary btn-xs"><i class="fa fa-share"></i></button></a>
+
+    <a href="{{ path('app_cat_tournois_edit', {'id': cat_tournoi.id}) }}"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></button></a>
+
+    {{ include('cat_tournois/_delete_form.html.twig') }}
+    </div>
+    <!-- fin div panel-body-->
+    </section>
+    <!-- fin section genre-->
+    </div>
+    <!-- fin div col-sm-8-->
+{% endblock %}
